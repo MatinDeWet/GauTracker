@@ -3,6 +3,7 @@ using Microsoft.Extensions.Hosting;
 using Observability.Options;
 using Serilog;
 using Serilog.Events;
+using System.Globalization;
 
 namespace Observability;
 
@@ -42,11 +43,12 @@ public static class ObservabilityDI
                 .Enrich.WithProperty("Application", configurationOptions.ApplicationName);
 
             loggerConfiguration.WriteTo.Console(
-                outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj} {Properties:j}{NewLine}{Exception}");
+                outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj} {Properties:j}{NewLine}{Exception}",
+                formatProvider: CultureInfo.InvariantCulture);
 
             if (context.HostingEnvironment.IsDevelopment())
             {
-                loggerConfiguration.WriteTo.Debug();
+                loggerConfiguration.WriteTo.Debug(formatProvider: CultureInfo.InvariantCulture);
             }
 
             ConfigureSink(loggerConfiguration, configurationOptions);
