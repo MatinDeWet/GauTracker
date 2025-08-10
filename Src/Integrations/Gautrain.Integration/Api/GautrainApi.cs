@@ -6,7 +6,7 @@ using RestSharp;
 
 namespace Gautrain.Integration.Api;
 
-public class GautrainApi : IGautrainApi
+public class GautrainApi : IGautrainApi, IDisposable
 {
     private readonly RestClient _client;
     private readonly JsonSerializerOptions _jsonOptions;

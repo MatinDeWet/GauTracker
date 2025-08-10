@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Infrastructure.Core.Schemas;
+using Microsoft.EntityFrameworkCore;
 
 namespace Background.Infrastructure.Data.Contexts;
 public class GauTrackerContext : DbContext

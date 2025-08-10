@@ -1,5 +1,6 @@
 ﻿using Background.Application.Repositories.Query;
 using Background.Infrastructure.Data.Contexts;
+using Domain.Core.Entities;
 using Repository.Core.Implementation;
 
 namespace Background.Infrastructure.Repositories.Query;

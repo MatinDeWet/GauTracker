@@ -1,6 +1,12 @@
+using Background.Application;
+using Background.Infrastructure;
+using CQRS.Core;
+using CQRS.Event.Core;
+using Gautrain.Integration.Extensions;
 using Hangfire;
 using Hangfire.PostgreSql;
 using Observability;
+using Repository.Core;
 
 namespace Background.API;
 
@@ -40,6 +46,16 @@ public static class Program
             options.HeartbeatInterval = TimeSpan.FromSeconds(30);
             options.ServerCheckInterval = TimeSpan.FromMinutes(5);
         });
+
+        builder.Services.AddGautrainApi();
+        builder.Services.AddGautrainCsvReader();
+
+
+        builder.Services.AddCQRSSupport(typeof(IApplicationPointer));
+        builder.Services.AddCQRSEventSupport();
+
+        builder.Services.AddDatabase(builder.Configuration, builder.Environment.IsDevelopment() || builder.Environment.IsStaging());
+        builder.Services.AddRepositories(typeof(IInfrastructurePointer));
 
         WebApplication app = builder.Build();
 

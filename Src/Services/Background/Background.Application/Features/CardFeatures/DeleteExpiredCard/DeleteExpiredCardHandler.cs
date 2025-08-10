@@ -2,6 +2,8 @@
 using Background.Application.Repositories.Command;
 using Background.Application.Repositories.Query;
 using CQRS.Core.Contracts;
+using Domain.Core.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace Background.Application.Features.CardFeatures.DeleteExpiredCard;
 internal sealed class DeleteExpiredCardHandler(ICardQueryRepository queryRepo, ICardCommandRepository commandRepo) : ICommandManager<DeleteExpiredCardRequest>
