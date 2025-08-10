@@ -9,6 +9,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\Common\CQRS\CQRS.Core\CQRS.Core.csproj" />
     <ProjectReference Include="..\..\..\Common\Identification\Identification.Base\Identification.Base.csproj" />
+    <ProjectReference Include="..\..\..\Common\Pagination\Pagination.csproj" />
     <ProjectReference Include="..\..\..\Common\Repository\Repository.Base\Repository.Base.csproj" />
     <ProjectReference Include="..\GauTracker.Domain\GauTracker.Domain.csproj" />
   </ItemGroup>
