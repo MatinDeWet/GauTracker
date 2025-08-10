@@ -1,9 +1,9 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using System.Globalization;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Observability.Options;
 using Serilog;
 using Serilog.Events;
-using System.Globalization;
 
 namespace Observability;
 

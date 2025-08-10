@@ -1,0 +1,13 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\CQRS.Core\CQRS.Core.csproj" />
+    <ProjectReference Include="..\CQRS.Event.Base\CQRS.Event.Base.csproj" />
+  </ItemGroup>
+
+</Project>

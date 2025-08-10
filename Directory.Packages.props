@@ -6,6 +6,7 @@
 
 		<!-- Extensions -->
 		<PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.8" />
+		<PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.8" />
 		<PackageVersion Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="9.0.8" />
 
 		<!-- EF Core -->
@@ -15,6 +16,9 @@
 
 		<!-- DI Helper -->
 		<PackageVersion Include="Scrutor" Version="6.1.0" />
+
+		<!-- CQRS -->
+		<PackageVersion Include="Ardalis.Result" Version="10.1.0" />
 		
 		<!-- Observability -->
 		<PackageVersion Include="Sentry.Serilog" Version="5.14.0" />
