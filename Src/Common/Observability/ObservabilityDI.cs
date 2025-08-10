@@ -97,7 +97,7 @@ public static class ObservabilityDI
 
                     if (httpContext.User.Identity?.IsAuthenticated == true)
                     {
-                        diagnosticContext.Set(ClaimTypes.NameIdentifier, httpContext.User.Claims.Where(x => x.Type == ClaimTypes.NameIdentifier).Select(x => x.Value).FirstOrDefault() ?? string.Empty);
+                        diagnosticContext.Set("UserId", httpContext.User.Claims.Where(x => x.Type == ClaimTypes.NameIdentifier).Select(x => x.Value).FirstOrDefault() ?? string.Empty);
                     }
                 };
             });
@@ -111,22 +111,17 @@ public static class ObservabilityDI
     /// </summary>
     private static void ConfigureSink(LoggerConfiguration loggerConfiguration, ObservabilityOptions configurationOptions)
     {
-        if (!Enum.TryParse(configurationOptions.MinimumBreadcrumbLevel, true, out LogEventLevel breadCrumbLevel))
+        if (!Enum.TryParse<LogEventLevel>(configurationOptions.MinimumLevel, true, out LogEventLevel logEventLevel))
         {
-            breadCrumbLevel = LogEventLevel.Information;
+            logEventLevel = LogEventLevel.Information;
         }
 
-        if (!Enum.TryParse(configurationOptions.MinimumEventLevel, true, out LogEventLevel minimumEventLevel))
-        {
-            minimumEventLevel = LogEventLevel.Error;
-        }
-
-        loggerConfiguration.WriteTo.Sentry(x =>
-        {
-            x.Dsn = configurationOptions.Dns;
-            x.MinimumBreadcrumbLevel = breadCrumbLevel;
-            x.MinimumEventLevel = minimumEventLevel;
-            x.InitializeSdk = true;
-        });
+        loggerConfiguration.WriteTo.OpenObserve(
+            url: configurationOptions.Url,
+            organization: configurationOptions.Organization,
+            login: configurationOptions.Login,
+            key: configurationOptions.Key,
+            streamName: configurationOptions.StreamName,
+            restrictedToMinimumLevel: logEventLevel);
     }
 }

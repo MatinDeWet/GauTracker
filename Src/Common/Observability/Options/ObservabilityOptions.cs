@@ -6,9 +6,15 @@ public class ObservabilityOptions
 
     public string ApplicationName { get; set; }
 
-    public string Dns { get; set; }
+    public string Url { get; set; }
 
-    public string MinimumBreadcrumbLevel { get; set; } = "Information";
+    public string Organization { get; set; }
 
-    public string MinimumEventLevel { get; set; } = "Error";
+    public string StreamName { get; set; } = "default";
+
+    public string Login { get; set; } = string.Empty;
+
+    public string Key { get; set; } = string.Empty;
+
+    public string MinimumLevel { get; set; } = "Information";
 }

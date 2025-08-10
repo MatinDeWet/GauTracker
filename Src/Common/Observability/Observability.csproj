@@ -2,7 +2,6 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" />
-    <PackageReference Include="Sentry.Serilog" />
 	<PackageReference Include="Serilog" />
 	<PackageReference Include="Serilog.AspNetCore" />
 	<PackageReference Include="Serilog.Enrichers.Environment" />
@@ -11,6 +10,7 @@
 	<PackageReference Include="Serilog.Expressions" />
 	<PackageReference Include="Serilog.Sinks.Debug" />
 	<PackageReference Include="Serilog.Sinks.Console" />
+	<PackageReference Include="Serilog.Sinks.OpenObserve-KKP" />
   </ItemGroup>
 
 </Project>

@@ -4,6 +4,9 @@ services:
       context: .
       dockerfile: docker/postgres/Dockerfile
 
+  openobserve:
+    image: public.ecr.aws/zinclabs/openobserve:latest
+
   gautracker.api:
     image: ${DOCKER_REGISTRY-}gautrackerapi
     build:
@@ -12,3 +15,4 @@ services:
 
 volumes:
   postgres_gautracker:
+  openobserve_data:  
