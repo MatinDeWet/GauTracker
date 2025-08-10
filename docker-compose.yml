@@ -13,6 +13,12 @@ services:
       context: .
       dockerfile: Src/Services/GauTracker/GauTracker.API/Dockerfile
 
+  background.api:
+    image: ${DOCKER_REGISTRY-}backgroundapi
+    build:
+      context: .
+      dockerfile: Src/Services/Background/Background.API/Dockerfile
+
 volumes:
   postgres_gautracker:
   openobserve_data:  

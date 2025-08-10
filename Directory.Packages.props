@@ -26,7 +26,7 @@
     <!-- CQRS -->
     <PackageVersion Include="Ardalis.Result" Version="10.1.0" />
     <!-- Observability -->
-	<PackageVersion Include="Serilog.Sinks.OpenObserve-KKP" Version="1.0.6" />
+    <PackageVersion Include="Serilog.Sinks.OpenObserve-KKP" Version="1.0.6" />
     <PackageVersion Include="Serilog" Version="4.3.0" />
     <PackageVersion Include="Serilog.AspNetCore" Version="9.0.0" />
     <PackageVersion Include="Serilog.Enrichers.Environment" Version="3.0.1" />
@@ -44,5 +44,9 @@
     <PackageVersion Include="MockQueryable.Moq" Version="8.0.0" />
     <PackageVersion Include="Moq" Version="4.20.72" />
     <PackageVersion Include="NetArchTest.Rules" Version="1.3.2" />
+	  <!-- Hangfire -->
+	<PackageVersion Include="Hangfire" Version="1.8.20" />
+	<PackageVersion Include="Hangfire.Core" Version="1.8.20" />
+	<PackageVersion Include="Hangfire.PostgreSql" Version="1.20.12" />
   </ItemGroup>
 </Project>
