@@ -70,7 +70,7 @@ internal sealed class UpsertStationsHandler(
         Point geometry = CreatePointFromCoordinates(apiStation.Geometry.Longitude, apiStation.Geometry.Latitude);
         Station? existingStation = FindExistingStation(apiStation.Id, existingStations);
 
-        if (existingStation == null)
+        if (existingStation is null)
         {
             await CreateNewStation(apiStation, geometry, existingTransportModes, cancellationToken);
         }
@@ -242,12 +242,12 @@ internal sealed class UpsertStationsHandler(
 
     private static bool AreGeometriesEqual(Point? existing, Point? updated)
     {
-        if (existing == null && updated == null)
+        if (existing is null && updated is null)
         {
             return true;
         }
 
-        if (existing == null || updated == null)
+        if (existing is null || updated is null)
         {
             return false;
         }
