@@ -1,3 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
+  <ItemGroup>
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Common\CQRS\CQRS.Core\CQRS.Core.csproj" />
+    <ProjectReference Include="..\..\..\Common\Repository\Repository.Base\Repository.Base.csproj" />
+    <ProjectReference Include="..\..\..\Integrations\Gautrain.Integration\Gautrain.Integration.csproj" />
+    <ProjectReference Include="..\Background.Domain\Background.Domain.csproj" />
+  </ItemGroup>
 </Project>

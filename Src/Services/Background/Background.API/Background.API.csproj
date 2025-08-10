@@ -15,6 +15,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\Common\Observability\Observability.csproj" />
+    <ProjectReference Include="..\Background.Infrastructure\Background.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

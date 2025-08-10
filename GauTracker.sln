@@ -107,6 +107,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Messaging.Core", "Src\Commo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Messaging.Event", "Src\Common\Messaging\Messaging.Event\Messaging.Event.csproj", "{99AC831D-E822-4FB0-9514-D33E4C389CCA}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Integrations", "Integrations", "{B3216592-7B1F-4ECF-A2D4-425C09D91346}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gautrain.Integration", "Src\Integrations\Gautrain.Integration\Gautrain.Integration.csproj", "{D0088B4C-323E-4DCE-AB0B-4112460AC383}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -241,6 +245,10 @@ Global
 		{99AC831D-E822-4FB0-9514-D33E4C389CCA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{99AC831D-E822-4FB0-9514-D33E4C389CCA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{99AC831D-E822-4FB0-9514-D33E4C389CCA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D0088B4C-323E-4DCE-AB0B-4112460AC383}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D0088B4C-323E-4DCE-AB0B-4112460AC383}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D0088B4C-323E-4DCE-AB0B-4112460AC383}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D0088B4C-323E-4DCE-AB0B-4112460AC383}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -291,6 +299,8 @@ Global
 		{83D17746-C4A9-4FA3-8B05-88D864E16208} = {86E5C38E-097C-496B-811D-399C9DA7E059}
 		{C7F8905D-1D2C-499C-98A3-34BB66C84A01} = {83D17746-C4A9-4FA3-8B05-88D864E16208}
 		{99AC831D-E822-4FB0-9514-D33E4C389CCA} = {83D17746-C4A9-4FA3-8B05-88D864E16208}
+		{B3216592-7B1F-4ECF-A2D4-425C09D91346} = {400B4F76-10A0-49F4-AE78-04434EF61DCB}
+		{D0088B4C-323E-4DCE-AB0B-4112460AC383} = {B3216592-7B1F-4ECF-A2D4-425C09D91346}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {6C30298C-76CB-4749-813E-0EECFE0B93F7}

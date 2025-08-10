@@ -1,0 +1,6 @@
+using Repository.Base;
+
+namespace Background.Application.Repositories.Command;
+public interface IStationCommandRepository : ICommandRepo
+{
+}
