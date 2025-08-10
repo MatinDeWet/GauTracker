@@ -1,4 +1,7 @@
 using Background.Application;
+using Background.Application.Features.CardFeatures.DeleteExpiredCard;
+using Background.Application.Features.StationFeatures.UpsertStations;
+using Background.Application.Services;
 using Background.Infrastructure;
 using CQRS.Core;
 using CQRS.Event.Core;
@@ -57,6 +60,8 @@ public static class Program
         builder.Services.AddDatabase(builder.Configuration, builder.Environment.IsDevelopment() || builder.Environment.IsStaging());
         builder.Services.AddRepositories(typeof(IInfrastructurePointer));
 
+        builder.Services.AddJobManager();
+
         WebApplication app = builder.Build();
 
         app.UseObservability();
@@ -69,6 +74,14 @@ public static class Program
             DarkModeEnabled = true,
             DefaultRecordsPerPage = 20
         });
+
+        using (IServiceScope scope = app.Services.CreateScope())
+        {
+            IJobSchedulerService jobScheduler = scope.ServiceProvider.GetRequiredService<IJobSchedulerService>();
+
+            jobScheduler.ScheduleRecurringCommand("expired-card-cleanup", new DeleteExpiredCardRequest(), Cron.Daily(0));
+            jobScheduler.ScheduleRecurringCommand("gautrain-station-sync", new UpsertStationsRequest(), Cron.Hourly(1));
+        }
 
         app.Run();
     }

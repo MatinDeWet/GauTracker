@@ -1,5 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <ItemGroup>
+    <PackageReference Include="Hangfire.Core" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\..\..\Common\CQRS\CQRS.Event.Core\CQRS.Event.Core.csproj" />
     <ProjectReference Include="..\..\..\Common\Repository\Repository.Core\Repository.Core.csproj" />
     <ProjectReference Include="..\..\..\Core\Infrastructure.Core\Infrastructure.Core.csproj" />

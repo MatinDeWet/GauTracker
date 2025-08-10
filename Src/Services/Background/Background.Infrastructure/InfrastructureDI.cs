@@ -1,5 +1,7 @@
 ﻿using System.Reflection;
+using Background.Application.Services;
 using Background.Infrastructure.Data.Contexts;
+using Background.Infrastructure.Services;
 using Infrastructure.Core.Schemas;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
@@ -32,6 +34,14 @@ public static class InfrastructureDI
                 options.EnableSensitiveDataLogging();
             }
         });
+
+        return services;
+    }
+
+    public static IServiceCollection AddJobManager(this IServiceCollection services)
+    {
+        services.AddScoped<JobService>();
+        services.AddScoped<IJobSchedulerService, JobSchedulerService>();
 
         return services;
     }
