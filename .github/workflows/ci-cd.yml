@@ -29,10 +29,10 @@ jobs:
         dotnet-version: ${{ env.DOTNET_VERSION }}
 
     - name: Restore dependencies
-      run: dotnet restore
+      run: dotnet restore GauTracker.sln
 
     - name: Build solution
-      run: dotnet build --no-restore --configuration Release
+      run: dotnet build GauTracker.sln --no-restore --configuration Release
 
     - name: Find test projects
       id: find-tests
@@ -227,15 +227,12 @@ jobs:
         dotnet-version: ${{ env.DOTNET_VERSION }}
 
     - name: Restore dependencies
-      run: dotnet restore
+      run: dotnet restore GauTracker.sln
 
     - name: Run security scan
       run: |
-        # Install security scanning tool
-        dotnet tool install --global security-scan
-        
         # Run security scan (this will scan for known vulnerabilities in packages)
-        dotnet list package --vulnerable --include-transitive 2>&1 | tee security-scan.log
+        dotnet list GauTracker.sln package --vulnerable --include-transitive 2>&1 | tee security-scan.log
         
         # Check if vulnerabilities were found
         if grep -q "has the following vulnerable packages" security-scan.log; then

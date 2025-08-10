@@ -28,18 +28,18 @@ jobs:
         dotnet-version: ${{ env.DOTNET_VERSION }}
 
     - name: Restore dependencies
-      run: dotnet restore
+      run: dotnet restore GauTracker.sln
 
     - name: Check code formatting
       run: |
-        dotnet format --verify-no-changes --verbosity diagnostic
+        dotnet format GauTracker.sln --verify-no-changes --verbosity diagnostic
         if [ $? -ne 0 ]; then
-          echo "::error::Code formatting issues detected. Please run 'dotnet format' to fix them."
+          echo "::error::Code formatting issues detected. Please run 'dotnet format GauTracker.sln' to fix them."
           exit 1
         fi
 
     - name: Build solution
-      run: dotnet build --no-restore --configuration Release --verbosity normal
+      run: dotnet build GauTracker.sln --no-restore --configuration Release --verbosity normal
 
     - name: Find and run tests
       id: test-discovery
@@ -138,12 +138,12 @@ jobs:
         dotnet-version: ${{ env.DOTNET_VERSION }}
 
     - name: Restore dependencies
-      run: dotnet restore
+      run: dotnet restore GauTracker.sln
 
     - name: Run static analysis
       run: |
         # Build with analysis enabled
-        dotnet build --configuration Release --verbosity normal --no-restore
+        dotnet build GauTracker.sln --configuration Release --verbosity normal --no-restore
         
         # Check for any build warnings/errors related to code analysis
         echo "Static analysis completed as part of build process"
@@ -174,12 +174,12 @@ jobs:
         dotnet-version: ${{ env.DOTNET_VERSION }}
 
     - name: Restore dependencies
-      run: dotnet restore
+      run: dotnet restore GauTracker.sln
 
     - name: Check for vulnerable packages
       run: |
         echo "Checking for vulnerable packages..."
-        dotnet list package --vulnerable --include-transitive > vulnerability-report.txt 2>&1
+        dotnet list GauTracker.sln package --vulnerable --include-transitive > vulnerability-report.txt 2>&1
         
         if grep -q "has the following vulnerable packages" vulnerability-report.txt; then
           echo "::error::Vulnerable packages detected!"
