@@ -22,6 +22,7 @@ public static class InfrastructureDI
                 {
                     opt.MigrationsAssembly(typeof(GauTrackerContext).GetTypeInfo().Assembly.GetName().Name);
                     opt.MigrationsHistoryTable(HistoryRepository.DefaultTableName, SchemaConstants.Migrations);
+                    opt.UseNetTopologySuite();
                 });
 
             options.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
