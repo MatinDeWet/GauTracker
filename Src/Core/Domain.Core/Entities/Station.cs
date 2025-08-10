@@ -10,6 +10,8 @@ public class Station : Entity<int>
 
     public Point Location { get; set; }
 
+    public DateTimeOffset DateUpdated { get; private set; }
+
     public virtual ICollection<StationTransportMode> StationTransportModes { get; private set; } = [];
 
     public static Station Create(string externalId, string name, Point location)
@@ -18,18 +20,33 @@ public class Station : Entity<int>
         {
             ExternalId = externalId,
             Name = name,
-            Location = location
+            Location = location,
+            DateUpdated = DateTimeOffset.UtcNow
         };
     }
 
     public void UpdateName(string name)
     {
+        if (!string.IsNullOrWhiteSpace(name) && Name.Equals(name, StringComparison.Ordinal))
+        {
+            return;
+        }
+
         Name = name;
+
+        DateUpdated = DateTimeOffset.UtcNow;
     }
 
     public void UpdateGeometry(Point geometry)
     {
+        if (Location != null && Location.Equals(geometry))
+        {
+            return;
+        }
+
         Location = geometry;
+
+        DateUpdated = DateTimeOffset.UtcNow;
     }
 
     public void AddTransportMode(int transportModeId)
@@ -47,10 +64,5 @@ public class Station : Entity<int>
         {
             StationTransportModes.Remove(existingRelation);
         }
-    }
-
-    public bool HasTransportMode(int transportModeId)
-    {
-        return StationTransportModes.Any(stm => stm.TransportModeId == transportModeId);
     }
 }
