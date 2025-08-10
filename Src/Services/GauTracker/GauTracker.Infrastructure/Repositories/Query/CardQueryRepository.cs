@@ -2,6 +2,7 @@
 using GauTracker.Application.Repositories.Query;
 using GauTracker.Infrastructure.Data.Contexts;
 using Identification.Base;
+using Microsoft.EntityFrameworkCore;
 using Repository.Core.Contracts;
 using Repository.Core.Implementation;
 
@@ -14,4 +15,13 @@ internal sealed class CardQueryRepository : SecureQueryRepo<GauTrackerContext>, 
     }
 
     public IQueryable<Card> Cards => Secure<Card>();
+
+    public async Task<bool> NumberExists(string number, CancellationToken cancellationToken)
+    {
+        bool exists = await _context.Set<Card>()
+            .Where(x => x.Number == number)
+            .AnyAsync(cancellationToken);
+
+        return exists;
+    }
 }

@@ -19,6 +19,14 @@ internal sealed class UpdateCardHandler(ICardQueryRepository queryRepo, ICardCom
             return Result.NotFound();
         }
 
+        if (card.Number != command.Number)
+        {
+            if (await queryRepo.NumberExists(command.Number, cancellationToken))
+            {
+                return Result.Conflict("Card with this number already exists.");
+            }
+        }
+
         card.Update(
             command.Alias,
             command.Number,
