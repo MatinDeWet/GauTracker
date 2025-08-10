@@ -8,6 +8,11 @@
 
   <ItemGroup>
     <PackageReference Include="MassTransit.RabbitMQ" />
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Messaging.Event\Messaging.Event.csproj" />
   </ItemGroup>
 
 </Project>

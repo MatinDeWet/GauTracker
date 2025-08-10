@@ -9,6 +9,10 @@ public static class MessagingDI
 {
     public static IServiceCollection AddMessaging(this IServiceCollection services, IConfiguration configuration, Assembly? assembly = null)
     {
+        var configurationOptions = new MessagingOptions();
+
+        configuration.GetSection(MessagingOptions.SectionName).Bind(configurationOptions);
+
         services.AddMassTransit(config =>
         {
             config.SetKebabCaseEndpointNameFormatter();
@@ -20,10 +24,10 @@ public static class MessagingDI
 
             config.UsingRabbitMq((context, configurator) =>
             {
-                configurator.Host(new Uri(configuration["MessageBroker:Host"]!), host =>
+                configurator.Host(new Uri(configurationOptions.Host), host =>
                 {
-                    host.Username(configuration["MessageBroker:UserName"]!);
-                    host.Password(configuration["MessageBroker:Password"]!);
+                    host.Username(configurationOptions.Username);
+                    host.Password(configurationOptions.Password);
                 });
                 configurator.ConfigureEndpoints(context);
             });
