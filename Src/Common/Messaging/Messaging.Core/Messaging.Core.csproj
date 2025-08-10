@@ -9,6 +9,7 @@
   <ItemGroup>
     <PackageReference Include="MassTransit.RabbitMQ" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" />
+    <PackageReference Include="Scrutor" />
   </ItemGroup>
 
   <ItemGroup>

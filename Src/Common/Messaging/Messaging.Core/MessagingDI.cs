@@ -1,5 +1,8 @@
 ﻿using System.Reflection;
 using MassTransit;
+using Messaging.Core.Abstractions;
+using Messaging.Core.MassTransit;
+using Messaging.Event.Common.Contracts;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -7,32 +10,72 @@ namespace Messaging.Core;
 
 public static class MessagingDI
 {
-    public static IServiceCollection AddMessaging(this IServiceCollection services, IConfiguration configuration, Assembly? assembly = null)
+    public static IServiceCollection AddMessaging(this IServiceCollection services, IConfiguration configuration, Type assemblyPointer)
     {
-        var configurationOptions = new MessagingOptions();
+        ArgumentNullException.ThrowIfNull(assemblyPointer);
+        return AddMessaging(services, configuration, assemblyPointer.Assembly);
+    }
 
-        configuration.GetSection(MessagingOptions.SectionName).Bind(configurationOptions);
+    public static IServiceCollection AddMessaging(this IServiceCollection services, IConfiguration configuration, params Assembly[] assemblies)
+    {
+        var options = new MessagingOptions();
+        configuration.GetSection(MessagingOptions.SectionName).Bind(options);
 
-        services.AddMassTransit(config =>
+        services.AddScoped<IIntegrationEventPublisher, MassTransitIntegrationEventPublisher>();
+
+        HashSet<Type> eventTypes = RegisterIntegrationEventHandlers(services, assemblies);
+
+        services.AddMassTransit(cfg =>
         {
-            config.SetKebabCaseEndpointNameFormatter();
+            cfg.SetKebabCaseEndpointNameFormatter();
 
-            if (assembly is not null)
+            // Register adapter consumers for discovered event types only
+            foreach (Type evtType in eventTypes)
             {
-                config.AddConsumers(assembly);
+                Type adapterType = typeof(IntegrationEventConsumerAdapter<>).MakeGenericType(evtType);
+                cfg.AddConsumer(adapterType);
             }
 
-            config.UsingRabbitMq((context, configurator) =>
+            cfg.UsingRabbitMq((context, bus) =>
             {
-                configurator.Host(new Uri(configurationOptions.Host), host =>
+                bus.Host(new Uri(options.Host), host =>
                 {
-                    host.Username(configurationOptions.Username);
-                    host.Password(configurationOptions.Password);
+                    host.Username(options.Username);
+                    host.Password(options.Password);
                 });
-                configurator.ConfigureEndpoints(context);
+
+                bus.ConfigureEndpoints(context);
             });
         });
 
         return services;
+    }
+
+    private static HashSet<Type> RegisterIntegrationEventHandlers(IServiceCollection services, Assembly[] assemblies)
+    {
+        var eventTypes = new HashSet<Type>();
+
+        if (assemblies is null || assemblies.Length == 0)
+        {
+            return eventTypes;
+        }
+
+        services.Scan(scan => scan
+            .FromAssemblies(assemblies)
+            .AddClasses(classes => classes.AssignableTo(typeof(IIntegrationEventHandler<>)), publicOnly: false)
+                .AsImplementedInterfaces()
+                .WithScopedLifetime());
+
+        foreach (ServiceDescriptor? descriptor in services.Where(d => d.ServiceType.IsGenericType &&
+                                                      d.ServiceType.GetGenericTypeDefinition() == typeof(IIntegrationEventHandler<>)))
+        {
+            Type eventType = descriptor.ServiceType.GetGenericArguments()[0];
+            if (typeof(IIntegrationEvent).IsAssignableFrom(eventType))
+            {
+                eventTypes.Add(eventType);
+            }
+        }
+
+        return eventTypes;
     }
 }
