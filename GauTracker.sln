@@ -101,6 +101,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Background", "Background", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Background.Architecture.UnitTests", "Tests\Services\Background\Background.Architecture.UnitTests\Background.Architecture.UnitTests.csproj", "{737F9F11-8446-43D1-8C0B-47C563733950}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Messaging", "Messaging", "{83D17746-C4A9-4FA3-8B05-88D864E16208}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Messaging.Core", "Src\Common\Messaging\Messaging.Core\Messaging.Core.csproj", "{C7F8905D-1D2C-499C-98A3-34BB66C84A01}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -227,6 +231,10 @@ Global
 		{737F9F11-8446-43D1-8C0B-47C563733950}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{737F9F11-8446-43D1-8C0B-47C563733950}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{737F9F11-8446-43D1-8C0B-47C563733950}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C7F8905D-1D2C-499C-98A3-34BB66C84A01}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C7F8905D-1D2C-499C-98A3-34BB66C84A01}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C7F8905D-1D2C-499C-98A3-34BB66C84A01}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C7F8905D-1D2C-499C-98A3-34BB66C84A01}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -274,6 +282,8 @@ Global
 		{7CE4D094-4707-4AAD-9DB5-A28E4FB4B219} = {3C2736B5-BB33-42EF-B1DF-502BC1AF08B4}
 		{E190E7D8-58C1-4878-BDBA-E1B2E61ADEFA} = {E086680A-A8DC-4E75-83E7-694D380EE0F5}
 		{737F9F11-8446-43D1-8C0B-47C563733950} = {E190E7D8-58C1-4878-BDBA-E1B2E61ADEFA}
+		{83D17746-C4A9-4FA3-8B05-88D864E16208} = {86E5C38E-097C-496B-811D-399C9DA7E059}
+		{C7F8905D-1D2C-499C-98A3-34BB66C84A01} = {83D17746-C4A9-4FA3-8B05-88D864E16208}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {6C30298C-76CB-4749-813E-0EECFE0B93F7}

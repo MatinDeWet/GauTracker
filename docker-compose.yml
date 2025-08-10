@@ -7,6 +7,9 @@ services:
   openobserve:
     image: public.ecr.aws/zinclabs/openobserve:latest
 
+  rabbitmq:
+    image: rabbitmq:management
+
   gautracker.api:
     image: ${DOCKER_REGISTRY-}gautrackerapi
     build:

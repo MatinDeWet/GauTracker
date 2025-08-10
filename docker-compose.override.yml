@@ -5,7 +5,7 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=GauTracker
-    restart: always
+    restart: unless-stopped
     ports:
         - "5432:5432"
     volumes:
@@ -27,6 +27,16 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
+
+  rabbitmq:
+    container_name: rabbitmq
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    restart: unless-stopped
+    ports:
+      - "5672:5672"
+      - "15672:15672"
 
   gautracker.api:
     container_name: gautracker-api
