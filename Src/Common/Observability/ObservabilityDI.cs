@@ -1,8 +1,11 @@
 ﻿using System.Globalization;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Observability.Options;
 using Serilog;
+using Serilog.AspNetCore;
 using Serilog.Events;
 
 namespace Observability;
@@ -57,6 +60,50 @@ public static class ObservabilityDI
         });
 
         return hostBuilder;
+    }
+
+    /// <summary>
+    /// Adds Serilog request logging middleware to the application pipeline
+    /// </summary>
+    /// <param name="app">The application builder</param>
+    /// <param name="configureOptions">Optional action to configure request logging options</param>
+    /// <returns>The configured application builder</returns>
+    public static IApplicationBuilder UseObservability(this IApplicationBuilder app, Action<RequestLoggingOptions>? configureOptions = null)
+    {
+        if (configureOptions != null)
+        {
+            app.UseSerilogRequestLogging(configureOptions);
+        }
+        else
+        {
+            app.UseSerilogRequestLogging(options =>
+            {
+                // Customize the message template
+                options.MessageTemplate = "HTTP {RequestMethod} {RequestPath} responded {StatusCode} in {Elapsed:0.0000} ms";
+
+                // Log level configuration
+                options.GetLevel = (httpContext, elapsed, ex) => ex != null
+                    ? LogEventLevel.Error
+                    : elapsed > 1000
+                        ? LogEventLevel.Warning
+                        : LogEventLevel.Information;
+
+                // Enrich log context with additional properties
+                options.EnrichDiagnosticContext = (diagnosticContext, httpContext) =>
+                {
+                    diagnosticContext.Set("RequestHost", httpContext.Request.Host.Value ?? string.Empty);
+                    diagnosticContext.Set("RequestScheme", httpContext.Request.Scheme);
+                    diagnosticContext.Set("UserAgent", httpContext.Request.Headers.UserAgent.FirstOrDefault() ?? string.Empty);
+
+                    if (httpContext.User.Identity?.IsAuthenticated == true)
+                    {
+                        diagnosticContext.Set(ClaimTypes.NameIdentifier, httpContext.User.Claims.Where(x => x.Type == ClaimTypes.NameIdentifier).Select(x => x.Value).FirstOrDefault() ?? string.Empty);
+                    }
+                };
+            });
+        }
+
+        return app;
     }
 
     /// <summary>

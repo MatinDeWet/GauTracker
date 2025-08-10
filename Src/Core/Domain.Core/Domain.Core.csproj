@@ -7,11 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\Core\Domain.Core\Domain.Core.csproj" />
+    <ProjectReference Include="..\..\Common\Domain.Support\Domain.Support.csproj" />
   </ItemGroup>
 
 </Project>

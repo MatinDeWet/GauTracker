@@ -2,7 +2,7 @@
 using GauTracker.API;
 using GauTracker.Application;
 using GauTracker.Domain;
-using GauTracker.Persistence;
+using GauTracker.Infrastructure;
 
 namespace GauTracker.Architecture.UnitTests;
 

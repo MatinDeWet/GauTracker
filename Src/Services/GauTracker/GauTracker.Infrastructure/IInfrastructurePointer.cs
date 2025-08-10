@@ -1,3 +1,3 @@
-﻿namespace GauTracker.Persistence;
+﻿namespace GauTracker.Infrastructure;
 
 public interface IInfrastructurePointer;

@@ -4,6 +4,11 @@
 	</PropertyGroup>
 	<ItemGroup>
 
+		<!-- API -->
+		<PackageVersion Include="FastEndpoints" Version="7.0.1" />
+		<PackageVersion Include="FastEndpoints.Security" Version="7.0.1" />
+		<PackageVersion Include="FastEndpoints.Swagger" Version="7.0.1" />
+		
 		<!-- Extensions -->
 		<PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.8" />
 		<PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.8" />
@@ -13,6 +18,11 @@
 		<PackageVersion Include="Microsoft.EntityFrameworkCore" Version="9.0.8" />
 		<PackageVersion Include="Npgsql" Version="9.0.3" />
 		<PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />
+		<PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.8" />
+		<PackageVersion Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.8" />
+
+		<!-- Identity -->
+		<PackageVersion Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="9.0.8" />
 
 		<!-- DI Helper -->
 		<PackageVersion Include="Scrutor" Version="6.1.0" />
