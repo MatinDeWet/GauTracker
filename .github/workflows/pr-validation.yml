@@ -15,6 +15,11 @@ jobs:
   validate-pr:
     name: Validate Pull Request
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: read
+      checks: write
+      pull-requests: write
     
     steps:
     - name: Checkout code
@@ -122,9 +127,68 @@ jobs:
           coverage-report/
         retention-days: 14
 
+    - name: Test Results Summary
+      if: always()
+      run: |
+        echo "## 🧪 Test Results Summary" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        
+        # Count test result files
+        TRX_COUNT=$(find ./test-results -name "*.trx" | wc -l)
+        echo "📊 **Test Projects Run:** $TRX_COUNT" >> $GITHUB_STEP_SUMMARY
+        
+        # Try to parse test results
+        TOTAL_TESTS=0
+        PASSED_TESTS=0
+        FAILED_TESTS=0
+        
+        for trx_file in ./test-results/*.trx; do
+          if [ -f "$trx_file" ]; then
+            project_name=$(basename "$trx_file" .trx)
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "### 📦 $project_name" >> $GITHUB_STEP_SUMMARY
+            
+            # Simple parsing for basic stats
+            if command -v xmllint >/dev/null 2>&1; then
+              project_total=$(xmllint --xpath "string(//Counters/@total)" "$trx_file" 2>/dev/null || echo "0")
+              project_passed=$(xmllint --xpath "string(//Counters/@passed)" "$trx_file" 2>/dev/null || echo "0")
+              project_failed=$(xmllint --xpath "string(//Counters/@failed)" "$trx_file" 2>/dev/null || echo "0")
+              
+              if [ "$project_total" -gt 0 ]; then
+                echo "- ✅ Passed: $project_passed" >> $GITHUB_STEP_SUMMARY
+                echo "- ❌ Failed: $project_failed" >> $GITHUB_STEP_SUMMARY
+                echo "- 📈 Total: $project_total" >> $GITHUB_STEP_SUMMARY
+                
+                TOTAL_TESTS=$((TOTAL_TESTS + project_total))
+                PASSED_TESTS=$((PASSED_TESTS + project_passed))
+                FAILED_TESTS=$((FAILED_TESTS + project_failed))
+              fi
+            else
+              echo "- 📋 Test results available in artifacts" >> $GITHUB_STEP_SUMMARY
+            fi
+          fi
+        done
+        
+        if [ $TOTAL_TESTS -gt 0 ]; then
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## 📊 Overall Summary" >> $GITHUB_STEP_SUMMARY
+          echo "- **Total Tests:** $TOTAL_TESTS" >> $GITHUB_STEP_SUMMARY
+          echo "- **Passed:** $PASSED_TESTS ✅" >> $GITHUB_STEP_SUMMARY
+          echo "- **Failed:** $FAILED_TESTS ❌" >> $GITHUB_STEP_SUMMARY
+          
+          if [ $FAILED_TESTS -eq 0 ]; then
+            echo "- **Status:** 🎉 All tests passed!" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "- **Status:** ⚠️ Some tests failed" >> $GITHUB_STEP_SUMMARY
+          fi
+        fi
+
   code-quality:
     name: Code Quality Analysis
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: read
     
     steps:
     - name: Checkout code
@@ -163,6 +227,9 @@ jobs:
   dependency-check:
     name: Dependency Vulnerability Check
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: read
     
     steps:
     - name: Checkout code
