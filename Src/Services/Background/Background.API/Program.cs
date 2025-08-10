@@ -45,6 +45,15 @@ public static class Program
 
         app.UseObservability();
 
+        app.UseHangfireDashboard("/hangfire", new DashboardOptions
+        {
+            Authorization = [],
+            DashboardTitle = "GauTracker Background Jobs",
+            DisplayStorageConnectionString = false,
+            DarkModeEnabled = true,
+            DefaultRecordsPerPage = 20
+        });
+
         app.Run();
     }
 }
