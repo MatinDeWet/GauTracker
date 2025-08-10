@@ -1,0 +1,14 @@
+services:
+  database:
+    build:
+      context: .
+      dockerfile: docker/postgres/Dockerfile
+
+  gautracker.api:
+    image: ${DOCKER_REGISTRY-}gautrackerapi
+    build:
+      context: .
+      dockerfile: Src/Services/GauTracker/GauTracker.API/Dockerfile
+
+volumes:
+  postgres_gautracker:
