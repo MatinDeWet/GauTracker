@@ -1,0 +1,198 @@
+name: Pull Request Validation
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches: [ master, develop ]
+
+env:
+  DOTNET_VERSION: '9.0.x'
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
+  DOTNET_NOLOGO: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: 1
+
+jobs:
+  validate-pr:
+    name: Validate Pull Request
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+
+    - name: Restore dependencies
+      run: dotnet restore
+
+    - name: Check code formatting
+      run: |
+        dotnet format --verify-no-changes --verbosity diagnostic
+        if [ $? -ne 0 ]; then
+          echo "::error::Code formatting issues detected. Please run 'dotnet format' to fix them."
+          exit 1
+        fi
+
+    - name: Build solution
+      run: dotnet build --no-restore --configuration Release --verbosity normal
+
+    - name: Find and run tests
+      id: test-discovery
+      run: |
+        # Discover all test projects
+        TEST_PROJECTS=$(find . -name "*.UnitTests.csproj" -o -name "*.IntegrationTests.csproj" -o -name "*.Tests.csproj")
+        
+        if [ -z "$TEST_PROJECTS" ]; then
+          echo "::warning::No test projects found"
+          exit 0
+        fi
+        
+        echo "Found test projects:"
+        echo "$TEST_PROJECTS"
+        
+        # Create test results directory
+        mkdir -p test-results
+        
+        # Run tests with coverage
+        TEST_SUCCESS=true
+        for project in $TEST_PROJECTS; do
+          echo "::group::Running tests for $(basename "$project" .csproj)"
+          project_name=$(basename "$project" .csproj)
+          
+          if ! dotnet test "$project" \
+            --no-build \
+            --configuration Release \
+            --logger "trx;LogFileName=${project_name}.trx" \
+            --logger "console;verbosity=detailed" \
+            --collect:"XPlat Code Coverage" \
+            --results-directory ./test-results/ \
+            --settings coverlet.runsettings; then
+            TEST_SUCCESS=false
+            echo "::error::Tests failed for $project_name"
+          fi
+          echo "::endgroup::"
+        done
+        
+        if [ "$TEST_SUCCESS" = false ]; then
+          echo "::error::One or more test projects failed"
+          exit 1
+        fi
+
+    - name: Generate coverage report
+      run: |
+        # Install report generator
+        dotnet tool install --global dotnet-reportgenerator-globaltool
+        
+        # Find coverage files
+        COVERAGE_FILES=$(find ./test-results -name "coverage.cobertura.xml" | tr '\n' ';')
+        
+        if [ ! -z "$COVERAGE_FILES" ]; then
+          echo "Generating coverage report from: $COVERAGE_FILES"
+          
+          reportgenerator \
+            -reports:"$COVERAGE_FILES" \
+            -targetdir:./coverage-report \
+            -reporttypes:"Html;Cobertura;MarkdownSummaryGithub" \
+            -assemblyfilters:"-*.UnitTests;-*.IntegrationTests;-*.Tests" \
+            -verbosity:Info
+        else
+          echo "::warning::No coverage files found"
+        fi
+
+    - name: Comment PR with coverage
+      uses: marocchino/sticky-pull-request-comment@v2
+      if: always() && github.event_name == 'pull_request'
+      with:
+        recreate: true
+        path: coverage-report/SummaryGithub.md
+        header: coverage-report
+
+    - name: Upload test artifacts
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: test-results-pr-${{ github.event.number }}
+        path: |
+          test-results/
+          coverage-report/
+        retention-days: 14
+
+  code-quality:
+    name: Code Quality Analysis
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+
+    - name: Restore dependencies
+      run: dotnet restore
+
+    - name: Run static analysis
+      run: |
+        # Build with analysis enabled
+        dotnet build --configuration Release --verbosity normal --no-restore
+        
+        # Check for any build warnings/errors related to code analysis
+        echo "Static analysis completed as part of build process"
+
+    - name: Check for TODO/FIXME comments
+      run: |
+        # Find TODO/FIXME comments (excluding this file)
+        TODO_COUNT=$(grep -r --include="*.cs" "TODO\|FIXME\|HACK" Src/ Tests/ || true | wc -l)
+        
+        if [ $TODO_COUNT -gt 0 ]; then
+          echo "::warning::Found $TODO_COUNT TODO/FIXME/HACK comments in codebase"
+          grep -r --include="*.cs" -n "TODO\|FIXME\|HACK" Src/ Tests/ || true
+        else
+          echo "No TODO/FIXME/HACK comments found"
+        fi
+
+  dependency-check:
+    name: Dependency Vulnerability Check
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+
+    - name: Restore dependencies
+      run: dotnet restore
+
+    - name: Check for vulnerable packages
+      run: |
+        echo "Checking for vulnerable packages..."
+        dotnet list package --vulnerable --include-transitive > vulnerability-report.txt 2>&1
+        
+        if grep -q "has the following vulnerable packages" vulnerability-report.txt; then
+          echo "::error::Vulnerable packages detected!"
+          cat vulnerability-report.txt
+          exit 1
+        else
+          echo "No vulnerable packages detected"
+        fi
+
+    - name: Upload vulnerability report
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: vulnerability-report-pr-${{ github.event.number }}
+        path: vulnerability-report.txt
+        retention-days: 14

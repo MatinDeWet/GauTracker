@@ -1,0 +1,255 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ master, develop ]
+  pull_request:
+    branches: [ master, develop ]
+
+env:
+  DOTNET_VERSION: '9.0.x'
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
+  DOTNET_NOLOGO: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: 1
+
+jobs:
+  build-and-test:
+    name: Build and Test
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0  # Needed for proper coverage reporting
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+
+    - name: Restore dependencies
+      run: dotnet restore
+
+    - name: Build solution
+      run: dotnet build --no-restore --configuration Release
+
+    - name: Find test projects
+      id: find-tests
+      run: |
+        # Find all test projects automatically
+        TEST_PROJECTS=$(find . -name "*.UnitTests.csproj" -o -name "*.IntegrationTests.csproj" -o -name "*.Tests.csproj" | tr '\n' ' ')
+        echo "Found test projects: $TEST_PROJECTS"
+        echo "test-projects=$TEST_PROJECTS" >> $GITHUB_OUTPUT
+
+    - name: Run tests with coverage
+      run: |
+        # Create coverage directory
+        mkdir -p coverage
+        
+        # Run tests for each project with coverage collection
+        for project in ${{ steps.find-tests.outputs.test-projects }}; do
+          echo "Running tests for: $project"
+          project_name=$(basename "$project" .csproj)
+          dotnet test "$project" \
+            --no-build \
+            --configuration Release \
+            --logger "trx;LogFileName=${project_name}.trx" \
+            --collect:"XPlat Code Coverage" \
+            --results-directory ./coverage/ \
+            --verbosity normal
+        done
+
+    - name: Merge coverage reports
+      run: |
+        # Install reportgenerator tool
+        dotnet tool install --global dotnet-reportgenerator-globaltool
+        
+        # Find all coverage files
+        coverage_files=$(find ./coverage -name "coverage.cobertura.xml" | tr '\n' ';')
+        
+        if [ ! -z "$coverage_files" ]; then
+          echo "Found coverage files: $coverage_files"
+          
+          # Generate merged coverage report
+          reportgenerator \
+            -reports:"$coverage_files" \
+            -targetdir:./coverage/merged \
+            -reporttypes:"Html;Cobertura;lcov" \
+            -verbosity:Info
+            
+          # Generate coverage summary for PR comments
+          reportgenerator \
+            -reports:"$coverage_files" \
+            -targetdir:./coverage/summary \
+            -reporttypes:"MarkdownSummaryGithub" \
+            -verbosity:Info
+        else
+          echo "No coverage files found"
+        fi
+
+    - name: Upload test results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: test-results
+        path: |
+          coverage/*.trx
+          coverage/merged/
+        retention-days: 30
+
+    - name: Publish test results
+      uses: dorny/test-reporter@v1
+      if: always()
+      with:
+        name: Test Results
+        path: 'coverage/*.trx'
+        reporter: dotnet-trx
+        fail-on-error: true
+
+    - name: Code Coverage Report
+      uses: irongut/CodeCoverageSummary@v1.3.0
+      if: always()
+      with:
+        filename: coverage/merged/Cobertura.xml
+        badge: true
+        fail_below_min: false  # Set to true if you want to fail builds on low coverage
+        format: markdown
+        hide_branch_rate: false
+        hide_complexity: true
+        indicators: true
+        output: both
+        thresholds: '60 80'  # Warning at 60%, error at 80%
+
+    - name: Add Coverage PR Comment
+      uses: marocchino/sticky-pull-request-comment@v2
+      if: github.event_name == 'pull_request' && always()
+      with:
+        recreate: true
+        path: code-coverage-results.md
+
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v4
+      if: always()
+      with:
+        file: ./coverage/merged/Cobertura.xml
+        flags: unittests
+        name: codecov-umbrella
+        fail_ci_if_error: false
+        token: ${{ secrets.CODECOV_TOKEN }}  # Optional: add this secret for private repos
+
+  build-api-images:
+    name: Build API Docker Images
+    runs-on: ubuntu-latest
+    needs: build-and-test
+    if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/develop'
+    
+    strategy:
+      matrix:
+        api: 
+          - name: gautracker-api
+            context: .
+            dockerfile: Src/Services/GauTracker/GauTracker.API/Dockerfile
+            project-path: Src/Services/GauTracker/GauTracker.API
+          - name: background-api
+            context: .
+            dockerfile: Src/Services/Background/Background.API/Dockerfile
+            project-path: Src/Services/Background/Background.API
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Check if Dockerfile exists
+      id: check-dockerfile
+      run: |
+        if [ -f "${{ matrix.api.dockerfile }}" ]; then
+          echo "dockerfile-exists=true" >> $GITHUB_OUTPUT
+          echo "Dockerfile found for ${{ matrix.api.name }}"
+        else
+          echo "dockerfile-exists=false" >> $GITHUB_OUTPUT
+          echo "Dockerfile not found for ${{ matrix.api.name }} at ${{ matrix.api.dockerfile }}"
+        fi
+
+    - name: Set up Docker Buildx
+      if: steps.check-dockerfile.outputs.dockerfile-exists == 'true'
+      uses: docker/setup-buildx-action@v3
+
+    - name: Login to GitHub Container Registry
+      if: steps.check-dockerfile.outputs.dockerfile-exists == 'true'
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Extract metadata
+      if: steps.check-dockerfile.outputs.dockerfile-exists == 'true'
+      id: meta
+      uses: docker/metadata-action@v5
+      with:
+        images: ghcr.io/${{ github.repository_owner }}/${{ matrix.api.name }}
+        tags: |
+          type=ref,event=branch
+          type=ref,event=pr
+          type=sha,prefix={{branch}}-
+          type=raw,value=latest,enable={{is_default_branch}}
+
+    - name: Build and push Docker image
+      if: steps.check-dockerfile.outputs.dockerfile-exists == 'true'
+      uses: docker/build-push-action@v5
+      with:
+        context: ${{ matrix.api.context }}
+        file: ${{ matrix.api.dockerfile }}
+        push: true
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+        platforms: linux/amd64
+
+  security-scan:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    needs: build-and-test
+    permissions:
+      security-events: write
+      actions: read
+      contents: read
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+
+    - name: Restore dependencies
+      run: dotnet restore
+
+    - name: Run security scan
+      run: |
+        # Install security scanning tool
+        dotnet tool install --global security-scan
+        
+        # Run security scan (this will scan for known vulnerabilities in packages)
+        dotnet list package --vulnerable --include-transitive 2>&1 | tee security-scan.log
+        
+        # Check if vulnerabilities were found
+        if grep -q "has the following vulnerable packages" security-scan.log; then
+          echo "::warning::Vulnerable packages detected. Please review security-scan.log"
+          exit 1
+        else
+          echo "No vulnerable packages detected"
+        fi
+      continue-on-error: true
+
+    - name: Upload security scan results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: security-scan-results
+        path: security-scan.log
+        retention-days: 30
