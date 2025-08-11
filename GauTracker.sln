@@ -111,6 +111,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Integrations", "Integration
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gautrain.Integration", "Src\Integrations\Gautrain.Integration\Gautrain.Integration.csproj", "{D0088B4C-323E-4DCE-AB0B-4112460AC383}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlobStorage", "Src\Common\BlobStorage\BlobStorage.csproj", "{C99E7326-AF38-4458-91BD-24B0D4DEE6D7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -249,6 +251,10 @@ Global
 		{D0088B4C-323E-4DCE-AB0B-4112460AC383}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D0088B4C-323E-4DCE-AB0B-4112460AC383}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D0088B4C-323E-4DCE-AB0B-4112460AC383}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C99E7326-AF38-4458-91BD-24B0D4DEE6D7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C99E7326-AF38-4458-91BD-24B0D4DEE6D7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C99E7326-AF38-4458-91BD-24B0D4DEE6D7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C99E7326-AF38-4458-91BD-24B0D4DEE6D7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -301,6 +307,7 @@ Global
 		{99AC831D-E822-4FB0-9514-D33E4C389CCA} = {83D17746-C4A9-4FA3-8B05-88D864E16208}
 		{B3216592-7B1F-4ECF-A2D4-425C09D91346} = {400B4F76-10A0-49F4-AE78-04434EF61DCB}
 		{D0088B4C-323E-4DCE-AB0B-4112460AC383} = {B3216592-7B1F-4ECF-A2D4-425C09D91346}
+		{C99E7326-AF38-4458-91BD-24B0D4DEE6D7} = {86E5C38E-097C-496B-811D-399C9DA7E059}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {6C30298C-76CB-4749-813E-0EECFE0B93F7}
