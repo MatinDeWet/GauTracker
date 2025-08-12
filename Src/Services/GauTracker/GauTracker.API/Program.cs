@@ -9,6 +9,7 @@ using GauTracker.Application;
 using GauTracker.Infrastructure;
 using GauTracker.Infrastructure.Data.Contexts;
 using Identification.Core;
+using Messaging.Core;
 using Microsoft.EntityFrameworkCore;
 using Observability;
 using Repository.Core;
@@ -34,6 +35,7 @@ public static class Program
         builder.Services.AddRepositories(typeof(IInfrastructurePointer));
 
         builder.Services.AddBlobSupport(builder.Configuration);
+        builder.Services.AddMessaging(builder.Configuration);
 
         builder.Services
             .AddAuthenticationJwtBearer(o => o.SigningKey = builder.Configuration["Auth:JWTSigningKey"])

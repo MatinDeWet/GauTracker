@@ -1,11 +1,12 @@
-﻿using Domain.Core.Enums;
+﻿using CQRS.Event.Base.Implementation;
+using Domain.Core.Enums;
+using Domain.Core.Events;
 using Domain.Support.Contracts;
 using Domain.Support.Enums;
 using Domain.Support.Extensions;
-using Domain.Support.Implementation;
 
 namespace Domain.Core.Entities;
-public class TransactionHistoryImportBatch : Entity<Guid>, IJobStatusAggregate
+public class TransactionHistoryImportBatch : EventableEntity<Guid>, IJobStatusAggregate
 {
     public Guid CardId { get; private set; }
     public virtual Card Card { get; private set; }
@@ -58,7 +59,7 @@ public class TransactionHistoryImportBatch : Entity<Guid>, IJobStatusAggregate
         ArgumentNullException.ThrowIfNullOrWhiteSpace(name, nameof(name));
         ArgumentNullException.ThrowIfNullOrWhiteSpace(sha256, nameof(sha256));
 
-        return new TransactionHistoryImportBatch
+        var transactionHistoryImportBatch = new TransactionHistoryImportBatch
         {
             Id = Guid.CreateVersion7(),
             CardId = cardId,
@@ -68,6 +69,10 @@ public class TransactionHistoryImportBatch : Entity<Guid>, IJobStatusAggregate
             UploadedAt = DateTimeOffset.UtcNow,
             Status = JobStatusEnum.Uploaded
         };
+
+        transactionHistoryImportBatch.AddDomainEvent(new TransactionHistoryImportBatchCreatedEvent(transactionHistoryImportBatch));
+
+        return transactionHistoryImportBatch;
     }
 
     public void Transition(JobStatusEnum next, DateTimeOffset? now = null)

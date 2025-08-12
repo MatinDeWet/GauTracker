@@ -11,6 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Common\CQRS\CQRS.Event.Base\CQRS.Event.Base.csproj" />
     <ProjectReference Include="..\..\Common\Domain.Support\Domain.Support.csproj" />
   </ItemGroup>
 
