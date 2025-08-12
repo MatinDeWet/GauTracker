@@ -3,6 +3,7 @@ using System;
 using GauTracker.Infrastructure.Data.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
@@ -12,9 +13,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace GauTracker.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(GauTrackerContext))]
-    partial class GauTrackerContextModelSnapshot : ModelSnapshot
+    [Migration("20250812160733_AddTransactionHistoryImportBatch")]
+    partial class AddTransactionHistoryImportBatch
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -128,9 +131,6 @@ namespace GauTracker.Infrastructure.Data.Migrations
                     b.Property<DateTimeOffset?>("CanceledAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<Guid>("CardId")
-                        .HasColumnType("uuid");
-
                     b.Property<DateTimeOffset?>("CompletedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -182,8 +182,6 @@ namespace GauTracker.Infrastructure.Data.Migrations
                         .HasColumnName("xmin");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("CardId");
 
                     b.HasIndex("Sha256")
                         .IsUnique();
@@ -491,17 +489,6 @@ namespace GauTracker.Infrastructure.Data.Migrations
                     b.Navigation("TransportMode");
                 });
 
-            modelBuilder.Entity("Domain.Core.Entities.TransactionHistoryImportBatch", b =>
-                {
-                    b.HasOne("Domain.Core.Entities.Card", "Card")
-                        .WithMany("TransactionHistoryImportBatchs")
-                        .HasForeignKey("CardId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Card");
-                });
-
             modelBuilder.Entity("GauTracker.Domain.Entities.UserRefreshToken", b =>
                 {
                     b.HasOne("GauTracker.Domain.Entities.ApplicationUser", "User")
@@ -562,11 +549,6 @@ namespace GauTracker.Infrastructure.Data.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("Domain.Core.Entities.Card", b =>
-                {
-                    b.Navigation("TransactionHistoryImportBatchs");
                 });
 
             modelBuilder.Entity("Domain.Core.Entities.Station", b =>

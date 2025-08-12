@@ -1,6 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Common\BlobStorage\BlobStorage.csproj" />
     <ProjectReference Include="..\..\..\Common\CQRS\CQRS.Core\CQRS.Core.csproj" />
     <ProjectReference Include="..\..\..\Common\Identification\Identification.Base\Identification.Base.csproj" />
     <ProjectReference Include="..\..\..\Common\Pagination\Pagination.csproj" />

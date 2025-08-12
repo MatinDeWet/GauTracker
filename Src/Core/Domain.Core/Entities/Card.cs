@@ -15,6 +15,8 @@ public class Card : Entity<Guid>
 
     public DateOnly ExpiryDate { get; private set; }
 
+    public virtual ICollection<TransactionHistoryImportBatch> TransactionHistoryImportBatchs { get; private set; } = [];
+
     public static Card Create(Guid userId, string alias, string number, CardTypeEnum cardType, DateOnly expiryDate)
     {
         return new Card

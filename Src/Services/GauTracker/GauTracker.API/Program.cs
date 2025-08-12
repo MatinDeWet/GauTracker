@@ -1,3 +1,4 @@
+using BlobStorage;
 using CQRS.Core;
 using CQRS.Event.Core;
 using FastEndpoints;
@@ -31,6 +32,8 @@ public static class Program
         builder.Services.AddDatabase(builder.Configuration, builder.Environment.IsDevelopment() || builder.Environment.IsStaging());
         builder.Services.AddSecuredRepositories(typeof(IInfrastructurePointer));
         builder.Services.AddRepositories(typeof(IInfrastructurePointer));
+
+        builder.Services.AddBlobSupport(builder.Configuration);
 
         builder.Services
             .AddAuthenticationJwtBearer(o => o.SigningKey = builder.Configuration["Auth:JWTSigningKey"])

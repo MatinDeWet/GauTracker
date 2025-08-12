@@ -10,6 +10,9 @@ services:
   rabbitmq:
     image: rabbitmq:management
 
+  minio:
+    image: quay.io/minio/minio:RELEASE.2024-07-29T22-14-52Z
+
   gautracker.api:
     image: ${DOCKER_REGISTRY-}gautrackerapi
     build:
@@ -25,3 +28,4 @@ services:
 volumes:
   postgres_gautracker:
   openobserve_data:  
+  minio_data:  
