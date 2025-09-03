@@ -8,6 +8,7 @@ using CQRS.Event.Core;
 using Gautrain.Integration.Extensions;
 using Hangfire;
 using Hangfire.PostgreSql;
+using Messaging.Core;
 using Observability;
 using Repository.Core;
 
@@ -61,6 +62,8 @@ public static class Program
         builder.Services.AddRepositories(typeof(IInfrastructurePointer));
 
         builder.Services.AddJobManager();
+
+        builder.Services.AddMessaging(builder.Configuration, typeof(IApplicationPointer));
 
         WebApplication app = builder.Build();
 

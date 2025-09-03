@@ -4,6 +4,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Common\CQRS\CQRS.Core\CQRS.Core.csproj" />
+    <ProjectReference Include="..\..\..\Common\Messaging\Messaging.Core\Messaging.Core.csproj" />
     <ProjectReference Include="..\..\..\Common\Repository\Repository.Base\Repository.Base.csproj" />
     <ProjectReference Include="..\..\..\Integrations\Gautrain.Integration\Gautrain.Integration.csproj" />
     <ProjectReference Include="..\Background.Domain\Background.Domain.csproj" />

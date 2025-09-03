@@ -23,18 +23,23 @@ public static class MessagingDI
 
         services.AddScoped<IIntegrationEventPublisher, MassTransitIntegrationEventPublisher>();
 
-        HashSet<Type> eventTypes = RegisterIntegrationEventHandlers(services, assemblies);
+        //HashSet<Type> eventTypes = RegisterIntegrationEventHandlers(services, assemblies);
 
         services.AddMassTransit(cfg =>
         {
             cfg.SetKebabCaseEndpointNameFormatter();
 
-            // Register adapter consumers for discovered event types only
-            foreach (Type evtType in eventTypes)
+            if (assemblies != null)
             {
-                Type adapterType = typeof(IntegrationEventConsumerAdapter<>).MakeGenericType(evtType);
-                cfg.AddConsumer(adapterType);
+                cfg.AddConsumers(assemblies);
             }
+
+            //// Register adapter consumers for discovered event types only
+            //foreach (Type evtType in eventTypes)
+            //{
+            //    Type adapterType = typeof(IntegrationEventConsumerAdapter<>).MakeGenericType(evtType);
+            //    cfg.AddConsumer(adapterType);
+            //}
 
             cfg.UsingRabbitMq((context, bus) =>
             {
@@ -51,31 +56,31 @@ public static class MessagingDI
         return services;
     }
 
-    private static HashSet<Type> RegisterIntegrationEventHandlers(IServiceCollection services, Assembly[] assemblies)
-    {
-        var eventTypes = new HashSet<Type>();
+    //private static HashSet<Type> RegisterIntegrationEventHandlers(IServiceCollection services, Assembly[] assemblies)
+    //{
+    //    var eventTypes = new HashSet<Type>();
 
-        if (assemblies is null || assemblies.Length == 0)
-        {
-            return eventTypes;
-        }
+    //    if (assemblies is null || assemblies.Length == 0)
+    //    {
+    //        return eventTypes;
+    //    }
 
-        services.Scan(scan => scan
-            .FromAssemblies(assemblies)
-            .AddClasses(classes => classes.AssignableTo(typeof(IIntegrationEventHandler<>)), publicOnly: false)
-                .AsImplementedInterfaces()
-                .WithScopedLifetime());
+    //    services.Scan(scan => scan
+    //        .FromAssemblies(assemblies)
+    //        .AddClasses(classes => classes.AssignableTo(typeof(IIntegrationEventHandler<>)), publicOnly: false)
+    //            .AsImplementedInterfaces()
+    //            .WithScopedLifetime());
 
-        foreach (ServiceDescriptor? descriptor in services.Where(d => d.ServiceType.IsGenericType &&
-                                                      d.ServiceType.GetGenericTypeDefinition() == typeof(IIntegrationEventHandler<>)))
-        {
-            Type eventType = descriptor.ServiceType.GetGenericArguments()[0];
-            if (typeof(IIntegrationEvent).IsAssignableFrom(eventType))
-            {
-                eventTypes.Add(eventType);
-            }
-        }
+    //    foreach (ServiceDescriptor? descriptor in services.Where(d => d.ServiceType.IsGenericType &&
+    //                                                  d.ServiceType.GetGenericTypeDefinition() == typeof(IIntegrationEventHandler<>)))
+    //    {
+    //        Type eventType = descriptor.ServiceType.GetGenericArguments()[0];
+    //        if (typeof(IIntegrationEvent).IsAssignableFrom(eventType))
+    //        {
+    //            eventTypes.Add(eventType);
+    //        }
+    //    }
 
-        return eventTypes;
-    }
+    //    return eventTypes;
+    //}
 }
