@@ -56,8 +56,12 @@ jobs:
         run: dotnet build --no-restore --configuration Release
 
       - name: Test
-        # Emits a TRX (test results) and a Cobertura coverage report (via coverlet.collector).
-        run: dotnet test --no-build --configuration Release --logger "trx;LogFileName=test-results.trx" --collect:"XPlat Code Coverage" --results-directory TestResults
+        # Emits a TRX (test results) and a Cobertura coverage report (via coverlet.collector)
+        # per test project. The TRX logger is configured per project in Directory.Build.props
+        # (VSTestLogger), which names each file after the project (e.g. CQRS.UnitTests.trx) so
+        # a multi-project solution doesn't overwrite a single shared file. No --logger here:
+        # a CLI logger would override that per-project name with one shared name again.
+        run: dotnet test --no-build --configuration Release --collect:"XPlat Code Coverage" --results-directory TestResults
 
       - name: Test Report
         # Publishes the TRX results as a check run with a pass/fail summary,
