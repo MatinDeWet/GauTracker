@@ -1,4 +1,7 @@
 <Solution>
+  <Folder Name="/Solution Items/">
+    <File Path="compose.yaml" />
+  </Folder>
   <Folder Name="/Src/" />
   <Folder Name="/Src/Services/" />
   <Folder Name="/Src/Services/WebApi/">
@@ -6,6 +9,9 @@
     <Project Path="Src/Services/WebApi/WebApi.Domain/WebApi.Domain.csproj" />
     <Project Path="Src/Services/WebApi/WebApi.infrastructure/WebApi.infrastructure.csproj" />
     <Project Path="Src/Services/WebApi/WebApi.Presentation/WebApi.Presentation.csproj" />
+  </Folder>
+  <Folder Name="/Src/Uitlities/">
+    <Project Path="Src/Utilities/Domain/Domain.csproj" />
   </Folder>
   <Folder Name="/Tests/" />
 </Solution>
