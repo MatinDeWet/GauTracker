@@ -1,0 +1,33 @@
+﻿services:
+  postgres:
+    image: postgres:17
+    container_name: gautracker-postgres
+    environment:
+      POSTGRES_DB: gau_db
+      POSTGRES_USER: gau_user
+      POSTGRES_PASSWORD: gau_password
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - ./DockerData/Database:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U gau_user -d gau_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  webapi.presentation:
+    image: webapi.presentation
+    build:
+      context: .
+      dockerfile: Src/Services/WebApi/WebApi.Presentation/Dockerfile
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      ConnectionStrings__GauDB: Host=postgres;Port=5432;Database=gau_db;Username=gau_user;Password=gau_password
+    ports:
+      - "8080:8080"
+      - "8081:8081"
+

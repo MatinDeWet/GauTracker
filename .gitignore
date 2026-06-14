@@ -6,6 +6,10 @@
 # dotenv files
 .env
 
+# Docker local data
+DockerData/Database/*
+!DockerData/Database/.gitkeep
+
 # User-specific files
 *.rsuser
 *.suo
