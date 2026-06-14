@@ -33,6 +33,9 @@ docker compose up                                        # Postgres + API togeth
 ### Tests
 There is no test project yet (the `/Tests/` solution folder is empty). When adding one, place it under `Tests/` and register it in `GauTracker.slnx`.
 
+### Pre-commit hooks
+Commits are scanned for secrets via [pre-commit](https://pre-commit.com) (config in `.pre-commit-config.yaml`): a `gitleaks` secret scan plus `detect-private-key`, `check-added-large-files`, and `check-merge-conflict`. These hooks are intentionally non-mutating — formatting stays the job of `.editorconfig`/analyzers. Run `pre-commit install` once per clone; see `Docs/PreCommit.md` for the full reference.
+
 ## Database & Migrations
 
 - Provider: Npgsql / PostgreSQL. Connection string key is `GauDB` (see `appsettings.json` / `ConnectionStrings__GauDB` env var).
