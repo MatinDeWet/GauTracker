@@ -25,6 +25,13 @@ After `pre-commit install`, the hooks run automatically on `git commit` against
 the files you staged. The first run downloads and caches each hook's
 environment, so it may take a moment.
 
+> **Local hooks are opt-in and can be bypassed** (`--no-verify`, or simply not
+> running `pre-commit install`). As a backstop, the CI pipeline runs the same
+> gitleaks scan server-side on every push and pull request — see the
+> `secret-scan` job in [`.github/workflows/ci.yml`](../.github/workflows/ci.yml).
+> That job is pinned to the same gitleaks version as this config, so local and
+> CI results match.
+
 ## What runs
 
 | Hook | Source | Purpose |
