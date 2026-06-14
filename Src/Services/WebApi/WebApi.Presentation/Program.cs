@@ -1,8 +1,10 @@
+using WebApi.Presentation.Common.DIExtensions;
+
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
+
+builder.Services.AddApplicationServices(builder.Configuration, builder.Environment);
 
 WebApplication app = builder.Build();
 
@@ -14,4 +16,6 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.Run();
+await app.ApplyDatabaseMigrationsAsync();
+
+await app.RunAsync();
