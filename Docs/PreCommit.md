@@ -26,11 +26,17 @@ the files you staged. The first run downloads and caches each hook's
 environment, so it may take a moment.
 
 > **Local hooks are opt-in and can be bypassed** (`--no-verify`, or simply not
-> running `pre-commit install`). As a backstop, the CI pipeline runs the same
-> gitleaks scan server-side on every push and pull request — see the
-> `secret-scan` job in [`.github/workflows/ci.yml`](../.github/workflows/ci.yml).
-> That job is pinned to the same gitleaks version as this config, so local and
-> CI results match.
+> running `pre-commit install`). As a backstop, the CI pipeline runs a gitleaks
+> scan server-side on every push and pull request — see the `secret-scan` job in
+> [`.github/workflows/ci.yml`](../.github/workflows/ci.yml). It uses
+> [`gitleaks/gitleaks-action`](https://github.com/gitleaks/gitleaks-action),
+> which is free for **personal-account** repositories and needs no license key.
+>
+> ⚠️ **If this repo is ever transferred to a GitHub organization**, the action
+> requires a (free) `GITLEAKS_LICENSE` — obtain one at
+> [gitleaks.io](https://gitleaks.io) and add it as a repo/org secret named
+> `GITLEAKS_LICENSE`, then pass it through the job's `env`. The local
+> pre-commit `gitleaks` hook has no such requirement.
 
 ## What runs
 

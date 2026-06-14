@@ -20,17 +20,17 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        with:
+          fetch-depth: 0 # full history so gitleaks can scan every commit in the push/PR
 
       - name: Run gitleaks
         # Server-side enforcement of the same scan as the local pre-commit hook
         # (.pre-commit-config.yaml) — gates PRs even if a contributor skips it.
-        # Version pinned to match the pre-commit gitleaks rev.
+        # No GITLEAKS_LICENSE needed: this is a personal-account repo. An
+        # organization-owned repo would require a (free) license — see Docs/PreCommit.md.
+        uses: gitleaks/gitleaks-action@e0c47f4f8be36e29cdc102c57e68cb5cbf0e8d1e # v3.0.0
         env:
-          GITLEAKS_VERSION: 8.30.1
-        run: |
-          curl -sSL "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz" \
-            | tar -xz gitleaks
-          ./gitleaks dir . --redact --no-banner --verbose
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   build:
     name: build
