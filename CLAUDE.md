@@ -6,6 +6,16 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 GauTracker is an ASP.NET Core Web API on **.NET 10** (C#) backed by PostgreSQL via EF Core. It currently exposes one bounded service (`WebApi`) structured with Clean Architecture, plus a shared `Domain` utility library. The solution file is `GauTracker.slnx` (XML-based slnx format).
 
+## Branching & Workflow
+
+This repo follows **GitFlow** — see [CONTRIBUTING.md](CONTRIBUTING.md) for the full guide.
+
+- **`main`** and **`develop`** are protected; **never commit to them directly.** All changes go through a pull request, and the `build` CI check must pass before merge.
+- **`develop`** is the default branch and the everyday integration target.
+- Branch off `develop` with `feature/*` for new work; PR back into `develop`.
+- `release/*` (off `develop`) and `hotfix/*` (off `main`) merge into **both** `main` and `develop`.
+- When doing work here, create an appropriately-named branch and open a PR — do not push to `main`/`develop`.
+
 ## Build & Run
 
 All commands run from the solution root (`/GauTracker`).
