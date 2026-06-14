@@ -75,7 +75,7 @@ jobs:
         uses: danielpalme/ReportGenerator-GitHub-Action@049f7ec958c672fd31d5cc1cb01622dc8d2e23ab # 5.5.10
         if: ${{ !cancelled() }}
         with:
-          reports: TestResults/**/coverage.cobertura.xml
+          reports: TestResults/*/coverage.cobertura.xml
           targetdir: CoverageReport
           reporttypes: MarkdownSummaryGithub;Html
 
