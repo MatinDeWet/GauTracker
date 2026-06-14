@@ -7,7 +7,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Folder Include="Entities\" />
+      <ProjectReference Include="..\..\..\Utilities\Domain\Domain.csproj" />
     </ItemGroup>
 
 </Project>
