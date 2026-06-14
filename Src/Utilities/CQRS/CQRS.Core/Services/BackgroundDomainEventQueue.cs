@@ -1,4 +1,5 @@
 using System.Threading.Channels;
+using CQRS.Core.Contracts;
 using CQRS.Domain.Contracts;
 
 namespace CQRS.Core.Services;
@@ -26,10 +27,4 @@ internal sealed class BackgroundDomainEventQueue : IBackgroundDomainEventQueue
     {
         return _channel.Reader.ReadAllAsync(cancellationToken);
     }
-}
-
-public interface IBackgroundDomainEventQueue
-{
-    ValueTask EnqueueAsync(IDomainEvent domainEvent, CancellationToken cancellationToken = default);
-    IAsyncEnumerable<IDomainEvent> DequeueAsync(CancellationToken cancellationToken = default);
 }

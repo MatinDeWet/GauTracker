@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using CQRS.Core;
+using CQRS.Core.Contracts;
 using CQRS.Core.Services;
 using CQRS.UnitTests.TestDoubles;
 using Microsoft.Extensions.DependencyInjection;
@@ -44,6 +45,52 @@ public class BackgroundDomainEventProcessorTests
         finally
         {
             await processor.StopAsync(CancellationToken.None);
+        }
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_InvokesEveryRegisteredHandler_ForOneEvent()
+    {
+        CancellationToken ct = TestContext.Current.CancellationToken;
+        HandlerSignal signal = new();
+        ServiceCollection services = new();
+        services.AddLogging();
+        services.AddSingleton(signal);
+        services.AddCQRSSupport(typeof(BackgroundDomainEventProcessorTests));
+
+        await using ServiceProvider provider = services.BuildServiceProvider();
+
+        BackgroundDomainEventProcessor processor = provider.GetServices<IHostedService>()
+            .OfType<BackgroundDomainEventProcessor>()
+            .Single();
+        IBackgroundDomainEventQueue queue = provider.GetRequiredService<IBackgroundDomainEventQueue>();
+
+        await processor.StartAsync(ct);
+        try
+        {
+            await queue.EnqueueAsync(new TestDomainEvent("multi"), ct);
+
+            await WaitUntilAsync(() => signal.HandledBy.Count == 2, TimeSpan.FromSeconds(5), ct);
+
+            signal.HandledBy.ShouldBe(
+                [nameof(TestDomainEventHandler), nameof(SecondTestDomainEventHandler)],
+                ignoreOrder: true);
+        }
+        finally
+        {
+            await processor.StopAsync(CancellationToken.None);
+        }
+    }
+
+    private static async Task WaitUntilAsync(Func<bool> condition, TimeSpan timeout, CancellationToken cancellationToken)
+    {
+        using var timeoutCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+        timeoutCts.CancelAfter(timeout);
+
+        while (!condition())
+        {
+            timeoutCts.Token.ThrowIfCancellationRequested();
+            await Task.Delay(10, timeoutCts.Token);
         }
     }
 }

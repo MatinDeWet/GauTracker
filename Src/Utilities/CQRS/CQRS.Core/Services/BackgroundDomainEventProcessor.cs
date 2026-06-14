@@ -1,3 +1,4 @@
+using System.Reflection;
 using CQRS.Domain.Contracts;
 using CQRS.Core.Contracts;
 using Microsoft.Extensions.DependencyInjection;
@@ -48,7 +49,7 @@ internal sealed class BackgroundDomainEventProcessor(
 
             try
             {
-                await InvokeHandlerAsync(handler, domainEvent, domainEventType, cancellationToken);
+                await InvokeHandlerAsync(handlerType, handler, domainEvent, cancellationToken);
             }
             catch (Exception ex)
             {
@@ -58,22 +59,15 @@ internal sealed class BackgroundDomainEventProcessor(
         }
     }
 
+    // Invoke through the public IDomainEventManager<TEvent>.Handle method so that internal
+    // handler implementations (the scan registers them with publicOnly: false) remain reachable.
     private static async Task InvokeHandlerAsync(
+        Type handlerType,
         object handler,
         IDomainEvent domainEvent,
-        Type domainEventType,
         CancellationToken cancellationToken)
     {
-        Type handlerWrapperType = typeof(HandlerWrapper<>).MakeGenericType(domainEventType);
-        dynamic handlerWrapper = Activator.CreateInstance(handlerWrapperType, handler)!;
-        await handlerWrapper.HandleAsync((dynamic)domainEvent, cancellationToken);
-    }
-
-    private sealed class HandlerWrapper<T>(IDomainEventManager<T> handler) where T : IDomainEvent
-    {
-        public async Task HandleAsync(T domainEvent, CancellationToken cancellationToken)
-        {
-            await handler.Handle(domainEvent, cancellationToken);
-        }
+        MethodInfo handle = handlerType.GetMethod(nameof(IDomainEventManager<IDomainEvent>.Handle))!;
+        await (Task)handle.Invoke(handler, [domainEvent, cancellationToken])!;
     }
 }

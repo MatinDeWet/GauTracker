@@ -1,6 +1,5 @@
 ﻿using CQRS.Domain.Contracts;
 using CQRS.Core.Contracts;
-using CQRS.Core.Services;
 
 namespace CQRS.Core.Implementation;
 

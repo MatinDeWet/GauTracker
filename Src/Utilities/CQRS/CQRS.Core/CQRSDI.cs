@@ -7,14 +7,14 @@ namespace CQRS.Core;
 
 public static class CQRSDI
 {
-    public static IServiceCollection AddCQRSSupport(this IServiceCollection services, Type assemplyPointer)
+    public static IServiceCollection AddCQRSSupport(this IServiceCollection services, Type assemblyPointer)
     {
-        return services.AddCQRSSupport(assemplyPointer, null);
+        return services.AddCQRSSupport(assemblyPointer, null);
     }
 
-    public static IServiceCollection AddCQRSSupport(this IServiceCollection services, Type assemplyPointer, Action<IServiceCollection>? configureDecorators)
+    public static IServiceCollection AddCQRSSupport(this IServiceCollection services, Type assemblyPointer, Action<IServiceCollection>? configureDecorators)
     {
-        services.Scan(scan => scan.FromAssembliesOf(assemplyPointer)
+        services.Scan(scan => scan.FromAssembliesOf(assemblyPointer)
             .AddClasses(classes => classes.AssignableTo(typeof(IQueryManager<,>)), publicOnly: false)
                 .AsImplementedInterfaces()
                 .WithScopedLifetime()
@@ -28,7 +28,7 @@ public static class CQRSDI
         // Apply additional decorators if provided
         configureDecorators?.Invoke(services);
 
-        services.Scan(scan => scan.FromAssembliesOf(assemplyPointer)
+        services.Scan(scan => scan.FromAssembliesOf(assemblyPointer)
             .AddClasses(classes => classes.AssignableTo(typeof(IDomainEventManager<>)), publicOnly: false)
             .AsImplementedInterfaces()
             .WithScopedLifetime());
