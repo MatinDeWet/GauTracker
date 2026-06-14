@@ -12,6 +12,10 @@
   </Folder>
   <Folder Name="/Src/Utilities/">
     <Project Path="Src/Utilities/Domain/Domain.csproj" />
+    <Project Path="Src/Utilities/Identification/Identification.csproj" />
   </Folder>
   <Folder Name="/Tests/" />
+  <Folder Name="/Tests/Utilities/">
+    <Project Path="Tests/Utilities/Identification.UnitTests/Identification.UnitTests.csproj" />
+  </Folder>
 </Solution>
