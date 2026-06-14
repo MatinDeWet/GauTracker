@@ -23,3 +23,7 @@ This project is under active development; security fixes are applied to the
   **local-development defaults only** and must never be reused in any shared or
   production environment. Supply real secrets via environment variables
   (`ConnectionStrings__GauDB`) or a secrets manager.
+- Commits are scanned for secrets by a [pre-commit](https://pre-commit.com)
+  `gitleaks` hook. Install it with `pre-commit install` — see
+  [Docs/PreCommit.md](Docs/PreCommit.md). This is a safety net, not a substitute
+  for keeping real secrets out of the repo in the first place.

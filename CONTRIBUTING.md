@@ -54,6 +54,19 @@ git checkout -b hotfix/x.y.z main      # branch off main
 # fix, then PR into main, tag, and also PR back into develop
 ```
 
+## Pre-commit hooks
+
+Before your first commit, install [pre-commit](https://pre-commit.com) and wire
+up the git hook. This scans every commit for accidentally-included secrets:
+
+```bash
+brew install pre-commit   # or: pip install pre-commit
+pre-commit install        # run once per clone, from the repo root
+```
+
+See [Docs/PreCommit.md](Docs/PreCommit.md) for the full hook reference and how
+to handle findings.
+
 ## Build & quality gates
 
 Warnings are treated as errors (`Directory.Build.props`), so the CI build fails
