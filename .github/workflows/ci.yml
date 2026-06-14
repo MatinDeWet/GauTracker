@@ -38,6 +38,7 @@ jobs:
     permissions:
       contents: read
       checks: write # dorny/test-reporter creates a check run with the test summary
+      pull-requests: write # sticky coverage comment on PRs
     steps:
       - name: Checkout
         uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
@@ -69,14 +70,37 @@ jobs:
           reporter: dotnet-trx
 
       - name: Coverage Report
-        # Renders the Cobertura report(s) into a GitHub-flavoured markdown summary.
+        # Renders the Cobertura report(s) into a GitHub-flavoured markdown summary
+        # plus a browsable HTML report (uploaded as an artifact below).
         uses: danielpalme/ReportGenerator-GitHub-Action@049f7ec958c672fd31d5cc1cb01622dc8d2e23ab # 5.5.10
         if: ${{ !cancelled() }}
         with:
           reports: TestResults/**/coverage.cobertura.xml
           targetdir: CoverageReport
-          reporttypes: MarkdownSummaryGithub
+          reporttypes: MarkdownSummaryGithub;Html
 
       - name: Publish coverage to job summary
         if: ${{ !cancelled() }}
-        run: cat CoverageReport/*.md >> "$GITHUB_STEP_SUMMARY"
+        run: cat CoverageReport/SummaryGithub.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Comment coverage on PR
+        # Sticky comment: updates the same comment on each run instead of stacking new ones.
+        uses: marocchino/sticky-pull-request-comment@0ea0beb66eb9baf113663a64ec522f60e49231c0 # v3.0.4
+        if: ${{ github.event_name == 'pull_request' && !cancelled() }}
+        with:
+          header: coverage
+          path: CoverageReport/SummaryGithub.md
+
+      - name: Upload test results
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        if: ${{ !cancelled() }}
+        with:
+          name: test-results
+          path: TestResults
+
+      - name: Upload coverage report
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        if: ${{ !cancelled() }}
+        with:
+          name: coverage-report
+          path: CoverageReport
