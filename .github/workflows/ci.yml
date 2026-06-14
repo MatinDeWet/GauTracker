@@ -55,7 +55,8 @@ jobs:
         run: dotnet build --no-restore --configuration Release
 
       - name: Test
-        run: dotnet test --no-build --configuration Release --logger "trx;LogFileName=test-results.trx" --results-directory TestResults
+        # Emits a TRX (test results) and a Cobertura coverage report (via coverlet.collector).
+        run: dotnet test --no-build --configuration Release --logger "trx;LogFileName=test-results.trx" --collect:"XPlat Code Coverage" --results-directory TestResults
 
       - name: Test Report
         # Publishes the TRX results as a check run with a pass/fail summary,
@@ -66,3 +67,16 @@ jobs:
           name: test results
           path: TestResults/*.trx
           reporter: dotnet-trx
+
+      - name: Coverage Report
+        # Renders the Cobertura report(s) into a GitHub-flavoured markdown summary.
+        uses: danielpalme/ReportGenerator-GitHub-Action@049f7ec958c672fd31d5cc1cb01622dc8d2e23ab # 5.5.10
+        if: ${{ !cancelled() }}
+        with:
+          reports: TestResults/**/coverage.cobertura.xml
+          targetdir: CoverageReport
+          reporttypes: MarkdownSummaryGithub
+
+      - name: Publish coverage to job summary
+        if: ${{ !cancelled() }}
+        run: cat CoverageReport/*.md >> "$GITHUB_STEP_SUMMARY"
