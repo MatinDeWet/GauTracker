@@ -10,7 +10,7 @@
     <Project Path="Src/Services/WebApi/WebApi.infrastructure/WebApi.infrastructure.csproj" />
     <Project Path="Src/Services/WebApi/WebApi.Presentation/WebApi.Presentation.csproj" />
   </Folder>
-  <Folder Name="/Src/Uitlities/">
+  <Folder Name="/Src/Utilities/">
     <Project Path="Src/Utilities/Domain/Domain.csproj" />
   </Folder>
   <Folder Name="/Tests/" />
