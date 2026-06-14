@@ -4,7 +4,7 @@ using Identification.Implementation;
 using Shouldly;
 using Xunit;
 
-namespace Identification.UnitTests;
+namespace Identification.UnitTests.Tests;
 
 public class IdentityInfoTests
 {
