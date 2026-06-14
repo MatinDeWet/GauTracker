@@ -8,7 +8,6 @@
 		<PackageReference Include="xunit.v3" />
 		<PackageReference Include="xunit.runner.visualstudio" />
 		<PackageReference Include="Shouldly" />
-		<PackageReference Include="GitHubActionsTestLogger" />
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\..\..\Src\Utilities\Identification\Identification.csproj" />

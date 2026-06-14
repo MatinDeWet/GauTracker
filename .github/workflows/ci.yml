@@ -35,6 +35,9 @@ jobs:
   build:
     name: build
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      checks: write # dorny/test-reporter creates a check run with the test summary
     steps:
       - name: Checkout
         uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
@@ -52,6 +55,14 @@ jobs:
         run: dotnet build --no-restore --configuration Release
 
       - name: Test
-        # GitHubActionsTestLogger writes a pass/fail results table to the GitHub
-        # job summary (like the gitleaks scan summary above).
-        run: dotnet test --no-build --configuration Release --logger GitHubActions
+        run: dotnet test --no-build --configuration Release --logger "trx;LogFileName=test-results.trx" --results-directory TestResults
+
+      - name: Test Report
+        # Publishes the TRX results as a check run with a pass/fail summary,
+        # mirroring the secret-scan summary above.
+        uses: dorny/test-reporter@a43b3a5f7366b97d083190328d2c652e1a8b6aa2 # v3.0.0
+        if: ${{ !cancelled() }} # report results even when tests fail
+        with:
+          name: test results
+          path: TestResults/*.trx
+          reporter: dotnet-trx
