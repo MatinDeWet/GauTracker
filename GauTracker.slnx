@@ -25,5 +25,6 @@
   <Folder Name="/Tests/Utilities/">
     <Project Path="Tests/Utilities/Identification.UnitTests/Identification.UnitTests.csproj" />
     <Project Path="Tests/Utilities/CQRS.UnitTests/CQRS.UnitTests.csproj" />
+    <Project Path="Tests/Utilities/Repository.UnitTests/Repository.UnitTests.csproj" />
   </Folder>
 </Solution>
