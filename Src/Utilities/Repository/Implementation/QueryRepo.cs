@@ -28,7 +28,6 @@ public abstract class QueryRepo<TCtx> : IQueryRepo where TCtx : DbContext
     /// <returns>An <see cref="IQueryable{T}"/> for the specified entity type.</returns>
     public virtual IQueryable<T> GetQueryable<T>() where T : class
     {
-        return _context.Set<T>()
-            .AsSingleQuery();
+        return _context.Set<T>();
     }
 }

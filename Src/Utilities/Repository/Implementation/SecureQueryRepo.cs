@@ -47,7 +47,6 @@ public abstract class SecureQueryRepo<TCtx> : QueryRepo<TCtx>, ISecureQueryRepo 
     {
         IProtected<T> entityLock = ProtectionResolver.Resolve<T>(_protection);
 
-        return entityLock.Secured(_info.GetInternalUserId())
-            .AsSingleQuery();
+        return entityLock.Secured(_info.GetInternalUserId());
     }
 }
