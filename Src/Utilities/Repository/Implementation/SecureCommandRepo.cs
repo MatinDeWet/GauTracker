@@ -158,11 +158,6 @@ public abstract class SecureCommandRepo<TCtx> : CommandRepo<TCtx>, ISecureComman
     /// <returns><c>true</c> if access is granted; otherwise, <c>false</c>.</returns>
     private async Task<bool> HasAccess<T>(T obj, RepositoryOperationEnum operation, CancellationToken cancellationToken) where T : class
     {
-        if (_info.IsAdmin())
-        {
-            return true;
-        }
-
         if (_protection.FirstOrDefault(x => x.IsMatch(typeof(T))) is IProtected<T> entityLock)
         {
             return await entityLock.HasAccess(obj, _info.GetInternalUserId(), operation, cancellationToken);

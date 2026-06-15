@@ -39,11 +39,6 @@ public abstract class SecureQueryRepo<TCtx> : QueryRepo<TCtx>, ISecureQueryRepo 
     /// <returns>A filtered <see cref="IQueryable{T}"/> or unfiltered if no protection is configured.</returns>
     public new IQueryable<T> GetQueryable<T>() where T : class
     {
-        if (_info.IsAdmin())
-        {
-            return base.GetQueryable<T>();
-        }
-
         if (_protection.FirstOrDefault(x => x.IsMatch(typeof(T))) is IProtected<T> entityLock)
         {
             return entityLock.Secured(_info.GetInternalUserId())
