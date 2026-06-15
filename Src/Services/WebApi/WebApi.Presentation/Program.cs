@@ -8,8 +8,6 @@ WebApplication app = builder.Build();
 
 app.UseHttpsRedirection();
 
-// Serve the OpenAPI document and Swagger UI before the auth middleware so the
-// secure-by-default fallback policy does not 401 the UI's static assets.
 if (app.Environment.IsDevelopment())
 {
     app.UseApiDocumentation();
