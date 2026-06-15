@@ -26,7 +26,7 @@ public abstract class QueryRepo<TCtx> : IQueryRepo where TCtx : DbContext
     /// </summary>
     /// <typeparam name="T">The type of entity to query.</typeparam>
     /// <returns>An <see cref="IQueryable{T}"/> for the specified entity type.</returns>
-    public IQueryable<T> GetQueryable<T>() where T : class
+    public virtual IQueryable<T> GetQueryable<T>() where T : class
     {
         return _context.Set<T>()
             .AsNoTracking()

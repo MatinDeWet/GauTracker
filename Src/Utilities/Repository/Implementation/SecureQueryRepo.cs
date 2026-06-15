@@ -8,8 +8,13 @@ namespace Repository.Implementation;
 /// Provides secure query operations by applying entity-specific security filters based on user identity.
 /// This class acts as a security gateway for read operations, automatically filtering queryable collections
 /// to ensure users can only access data they have permission to view through registered entity protection
-/// implementations and optional access rules.
+/// implementations.
 /// </summary>
+/// <remarks>
+/// The filtering overrides <see cref="QueryRepo{TCtx}.GetQueryable{T}"/>, so security is applied regardless
+/// of the static type used to reference the repository (the concrete type, <see cref="QueryRepo{TCtx}"/>,
+/// <see cref="IQueryRepo"/> or <see cref="ISecureQueryRepo"/>). There is no unfiltered path.
+/// </remarks>
 /// <typeparam name="TCtx">The type of Entity Framework DbContext.</typeparam>
 public abstract class SecureQueryRepo<TCtx> : QueryRepo<TCtx>, ISecureQueryRepo where TCtx : DbContext
 {
@@ -30,22 +35,20 @@ public abstract class SecureQueryRepo<TCtx> : QueryRepo<TCtx>, ISecureQueryRepo 
     }
 
     /// <summary>
-    /// Returns a secure queryable collection with appropriate security filters applied
-    /// based on the configured access requirements and entity protections.
-    /// This is the secure version of <see cref="QueryRepo{TCtx}.GetQueryable{T}"/> with automatic security filtering.
-    /// First evaluates access rules if configured, then applies entity-specific protection filters.
+    /// Returns a secure queryable collection with the entity-specific protection filter applied for the
+    /// current user. Overrides <see cref="QueryRepo{TCtx}.GetQueryable{T}"/> so the filter cannot be bypassed.
     /// </summary>
     /// <typeparam name="T">The type of entity to query.</typeparam>
-    /// <returns>A filtered <see cref="IQueryable{T}"/> or unfiltered if no protection is configured.</returns>
-    public new IQueryable<T> GetQueryable<T>() where T : class
+    /// <returns>A filtered <see cref="IQueryable{T}"/>.</returns>
+    /// <exception cref="InvalidOperationException">
+    /// Thrown when no protection is registered for <typeparamref name="T"/>, or when the configuration is ambiguous.
+    /// </exception>
+    public override IQueryable<T> GetQueryable<T>() where T : class
     {
-        if (_protection.FirstOrDefault(x => x.IsMatch(typeof(T))) is IProtected<T> entityLock)
-        {
-            return entityLock.Secured(_info.GetInternalUserId())
-                .AsNoTracking()
-                .AsSingleQuery();
-        }
+        IProtected<T> entityLock = ProtectionResolver.Resolve<T>(_protection);
 
-        return base.GetQueryable<T>();
+        return entityLock.Secured(_info.GetInternalUserId())
+            .AsNoTracking()
+            .AsSingleQuery();
     }
 }

@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using NSubstitute;
 using Repository.Contracts;
 using Repository.Enums;
+using Repository.Implementation;
 using Repository.UnitTests.TestDoubles;
 using Shouldly;
 using Xunit;
@@ -116,13 +117,42 @@ public class SecureCommandRepoTests
     }
 
     [Fact]
-    public async Task InsertAsync_StagesEntity_WhenNoMatchingProtection()
+    public async Task InsertAsync_Throws_WhenNoProtectionRegistered()
     {
         TestSecureCommandRepo sut = CreateSut();
 
-        await sut.InsertAsync(_entity, TestContext.Current.CancellationToken);
+        await Should.ThrowAsync<InvalidOperationException>(
+            () => sut.InsertAsync(_entity, TestContext.Current.CancellationToken));
 
-        _context.Received(1).Add(_entity);
+        _context.DidNotReceive().Add(Arg.Any<TestEntity>());
+    }
+
+    [Fact]
+    public async Task InsertAsync_Throws_WhenMultipleProtectionsMatch()
+    {
+        Grant();
+        IProtected<TestEntity> second = Substitute.For<IProtected<TestEntity>>();
+        second.IsMatch(typeof(TestEntity)).Returns(true);
+        TestSecureCommandRepo sut = CreateSut(_lock, second);
+
+        await Should.ThrowAsync<InvalidOperationException>(
+            () => sut.InsertAsync(_entity, TestContext.Current.CancellationToken));
+
+        _context.DidNotReceive().Add(Arg.Any<TestEntity>());
+    }
+
+    [Fact]
+    public async Task InsertAsync_StillEnforcesAccess_WhenReferencedAsBaseCommandRepoType()
+    {
+        Deny();
+
+        // Upcast to the non-secure base type: the override must still run (no bypass).
+        CommandRepo<DbContext> sut = CreateSut(_lock);
+
+        await Should.ThrowAsync<UnauthorizedAccessException>(
+            () => sut.InsertAsync(_entity, TestContext.Current.CancellationToken));
+
+        _context.DidNotReceive().Add(Arg.Any<TestEntity>());
     }
 
     [Fact]

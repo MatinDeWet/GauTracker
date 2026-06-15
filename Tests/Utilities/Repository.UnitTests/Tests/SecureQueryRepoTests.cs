@@ -4,6 +4,7 @@ using MockQueryable;
 using MockQueryable.NSubstitute;
 using NSubstitute;
 using Repository.Contracts;
+using Repository.Implementation;
 using Repository.UnitTests.TestDoubles;
 using Shouldly;
 using Xunit;
@@ -50,14 +51,37 @@ public class SecureQueryRepoTests
     }
 
     [Fact]
-    public async Task GetQueryable_ReturnsAllData_WhenNoMatchingProtection()
+    public void GetQueryable_Throws_WhenNoProtectionRegistered()
     {
         TestSecureQueryRepo sut = CreateSut();
+
+        Should.Throw<InvalidOperationException>(() => sut.GetQueryable<TestEntity>());
+        _lock.DidNotReceive().Secured(Arg.Any<long>());
+    }
+
+    [Fact]
+    public void GetQueryable_Throws_WhenMultipleProtectionsMatch()
+    {
+        IProtected<TestEntity> second = Substitute.For<IProtected<TestEntity>>();
+        second.IsMatch(typeof(TestEntity)).Returns(true);
+        TestSecureQueryRepo sut = CreateSut(_lock, second);
+
+        Should.Throw<InvalidOperationException>(() => sut.GetQueryable<TestEntity>());
+    }
+
+    [Fact]
+    public async Task GetQueryable_StillFilters_WhenReferencedAsBaseQueryRepoType()
+    {
+        List<TestEntity> secured = [_allData[0]];
+        IQueryable<TestEntity> securedQueryable = secured.BuildMock();
+        _lock.Secured(UserId).Returns(securedQueryable);
+
+        // Upcast to the non-secure base type: the override must still run (no bypass).
+        QueryRepo<DbContext> sut = CreateSut(_lock);
 
         List<TestEntity> result = await sut.GetQueryable<TestEntity>()
             .ToListAsync(TestContext.Current.CancellationToken);
 
-        result.ShouldBe(_allData);
-        _lock.DidNotReceive().Secured(Arg.Any<long>());
+        result.ShouldBe(secured);
     }
 }

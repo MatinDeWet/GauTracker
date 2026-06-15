@@ -8,9 +8,15 @@ namespace Repository.Implementation;
 /// <summary>
 /// Provides secure command operations by validating user permissions before executing data modifications.
 /// This class acts as a security gateway for write operations (insert, update, delete), ensuring all data
-/// modification attempts are authorized through entity-specific protection implementations and optional
-/// access rules before being staged to the database context.
+/// modification attempts are authorized through entity-specific protection implementations before being
+/// staged to the database context.
 /// </summary>
+/// <remarks>
+/// The checks override the <see cref="CommandRepo{TCtx}"/> modification methods, so validation is applied
+/// regardless of the static type used to reference the repository (the concrete type,
+/// <see cref="CommandRepo{TCtx}"/>, <see cref="ICommandRepo"/> or <see cref="ISecureCommandRepo"/>). The
+/// inherited persist-immediately overloads route through these overrides, so there is no unvalidated path.
+/// </remarks>
 /// <typeparam name="TCtx">The type of Entity Framework DbContext.</typeparam>
 public abstract class SecureCommandRepo<TCtx> : CommandRepo<TCtx>, ISecureCommandRepo where TCtx : DbContext
 {
@@ -31,138 +37,71 @@ public abstract class SecureCommandRepo<TCtx> : CommandRepo<TCtx>, ISecureComman
     }
 
     /// <summary>
-    /// Validates permissions and stages the entity for insertion.
-    /// This is the secure version of <see cref="CommandRepo{TCtx}.InsertAsync{T}(T, CancellationToken)"/> with built-in permission validation.
+    /// Validates permissions and stages the entity for insertion. Overrides
+    /// <see cref="CommandRepo{TCtx}.InsertAsync{T}(T, CancellationToken)"/> so the check cannot be bypassed.
     /// </summary>
     /// <typeparam name="T">The entity type.</typeparam>
     /// <param name="obj">The entity to insert.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <exception cref="UnauthorizedAccessException">Thrown when the user does not have permission to insert the entity.</exception>
-    public new virtual async Task InsertAsync<T>(T obj, CancellationToken cancellationToken) where T : class
+    /// <exception cref="InvalidOperationException">Thrown when no protection is registered for the entity type.</exception>
+    public override async Task InsertAsync<T>(T obj, CancellationToken cancellationToken) where T : class
     {
-        bool hasAccess = await HasAccess(obj, RepositoryOperationEnum.Insert, cancellationToken);
-
-        if (!hasAccess)
-        {
-            throw new UnauthorizedAccessException();
-        }
+        await EnsureAccess(obj, RepositoryOperationEnum.Insert, cancellationToken);
 
         _context.Add(obj);
     }
 
     /// <summary>
-    /// Validates permissions and stages the entity for insertion, optionally persisting immediately.
-    /// This is the secure version of <see cref="CommandRepo{TCtx}.InsertAsync{T}(T, bool, CancellationToken)"/> with built-in permission validation.
-    /// </summary>
-    /// <typeparam name="T">The entity type.</typeparam>
-    /// <param name="obj">The entity to insert.</param>
-    /// <param name="persistImmediately">Whether to save changes immediately.</param>
-    /// <param name="cancellationToken">Cancellation token.</param>
-    /// <exception cref="UnauthorizedAccessException">Thrown when the user does not have permission to insert the entity.</exception>
-    public new async Task InsertAsync<T>(T obj, bool persistImmediately, CancellationToken cancellationToken) where T : class
-    {
-        await InsertAsync(obj, cancellationToken);
-
-        if (persistImmediately)
-        {
-            await SaveAsync(cancellationToken);
-        }
-    }
-
-    /// <summary>
-    /// Validates permissions and stages the entity for update.
-    /// This is the secure version of <see cref="CommandRepo{TCtx}.UpdateAsync{T}(T, CancellationToken)"/> with built-in permission validation.
+    /// Validates permissions and stages the entity for update. Overrides
+    /// <see cref="CommandRepo{TCtx}.UpdateAsync{T}(T, CancellationToken)"/> so the check cannot be bypassed.
     /// </summary>
     /// <typeparam name="T">The entity type.</typeparam>
     /// <param name="obj">The entity to update.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <exception cref="UnauthorizedAccessException">Thrown when the user does not have permission to update the entity.</exception>
-    public new virtual async Task UpdateAsync<T>(T obj, CancellationToken cancellationToken) where T : class
+    /// <exception cref="InvalidOperationException">Thrown when no protection is registered for the entity type.</exception>
+    public override async Task UpdateAsync<T>(T obj, CancellationToken cancellationToken) where T : class
     {
-        bool hasAccess = await HasAccess(obj, RepositoryOperationEnum.Update, cancellationToken);
-
-        if (!hasAccess)
-        {
-            throw new UnauthorizedAccessException();
-        }
+        await EnsureAccess(obj, RepositoryOperationEnum.Update, cancellationToken);
 
         _context.Update(obj);
     }
 
     /// <summary>
-    /// Validates permissions and stages the entity for update, optionally persisting immediately.
-    /// This is the secure version of <see cref="CommandRepo{TCtx}.UpdateAsync{T}(T, bool, CancellationToken)"/> with built-in permission validation.
-    /// </summary>
-    /// <typeparam name="T">The entity type.</typeparam>
-    /// <param name="obj">The entity to update.</param>
-    /// <param name="persistImmediately">Whether to save changes immediately.</param>
-    /// <param name="cancellationToken">Cancellation token.</param>
-    /// <exception cref="UnauthorizedAccessException">Thrown when the user does not have permission to update the entity.</exception>
-    public new async Task UpdateAsync<T>(T obj, bool persistImmediately, CancellationToken cancellationToken) where T : class
-    {
-        await UpdateAsync(obj, cancellationToken);
-
-        if (persistImmediately)
-        {
-            await SaveAsync(cancellationToken);
-        }
-    }
-
-    /// <summary>
-    /// Validates permissions and stages the entity for deletion.
-    /// This is the secure version of <see cref="CommandRepo{TCtx}.DeleteAsync{T}(T, CancellationToken)"/> with built-in permission validation.
+    /// Validates permissions and stages the entity for deletion. Overrides
+    /// <see cref="CommandRepo{TCtx}.DeleteAsync{T}(T, CancellationToken)"/> so the check cannot be bypassed.
     /// </summary>
     /// <typeparam name="T">The entity type.</typeparam>
     /// <param name="obj">The entity to delete.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <exception cref="UnauthorizedAccessException">Thrown when the user does not have permission to delete the entity.</exception>
-    public new virtual async Task DeleteAsync<T>(T obj, CancellationToken cancellationToken) where T : class
+    /// <exception cref="InvalidOperationException">Thrown when no protection is registered for the entity type.</exception>
+    public override async Task DeleteAsync<T>(T obj, CancellationToken cancellationToken) where T : class
     {
-        bool hasAccess = await HasAccess(obj, RepositoryOperationEnum.Delete, cancellationToken);
-
-        if (!hasAccess)
-        {
-            throw new UnauthorizedAccessException();
-        }
+        await EnsureAccess(obj, RepositoryOperationEnum.Delete, cancellationToken);
 
         _context.Remove(obj);
     }
 
     /// <summary>
-    /// Validates permissions and stages the entity for deletion, optionally persisting immediately.
-    /// This is the secure version of <see cref="CommandRepo{TCtx}.DeleteAsync{T}(T, bool, CancellationToken)"/> with built-in permission validation.
-    /// </summary>
-    /// <typeparam name="T">The entity type.</typeparam>
-    /// <param name="obj">The entity to delete.</param>
-    /// <param name="persistImmediately">Whether to save changes immediately.</param>
-    /// <param name="cancellationToken">Cancellation token.</param>
-    /// <exception cref="UnauthorizedAccessException">Thrown when the user does not have permission to delete the entity.</exception>
-    public new async Task DeleteAsync<T>(T obj, bool persistImmediately, CancellationToken cancellationToken) where T : class
-    {
-        await DeleteAsync(obj, cancellationToken);
-
-        if (persistImmediately)
-        {
-            await SaveAsync(cancellationToken);
-        }
-    }
-
-    /// <summary>
-    /// Validates user access for the specified operation on the entity.
-    /// First evaluates any configured access rules, then checks entity-specific protection if available.
+    /// Validates user access for the specified operation on the entity and throws when it is denied.
     /// </summary>
     /// <typeparam name="T">The entity type.</typeparam>
     /// <param name="obj">The entity to check.</param>
     /// <param name="operation">The operation type.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
-    /// <returns><c>true</c> if access is granted; otherwise, <c>false</c>.</returns>
-    private async Task<bool> HasAccess<T>(T obj, RepositoryOperationEnum operation, CancellationToken cancellationToken) where T : class
+    /// <exception cref="UnauthorizedAccessException">Thrown when access is denied.</exception>
+    /// <exception cref="InvalidOperationException">Thrown when no protection is registered for the entity type.</exception>
+    private async Task EnsureAccess<T>(T obj, RepositoryOperationEnum operation, CancellationToken cancellationToken) where T : class
     {
-        if (_protection.FirstOrDefault(x => x.IsMatch(typeof(T))) is IProtected<T> entityLock)
-        {
-            return await entityLock.HasAccess(obj, _info.GetInternalUserId(), operation, cancellationToken);
-        }
+        IProtected<T> entityLock = ProtectionResolver.Resolve<T>(_protection);
 
-        return true;
+        bool hasAccess = await entityLock.HasAccess(obj, _info.GetInternalUserId(), operation, cancellationToken);
+
+        if (!hasAccess)
+        {
+            throw new UnauthorizedAccessException();
+        }
     }
 }
