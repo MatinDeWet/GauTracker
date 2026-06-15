@@ -14,6 +14,9 @@
     <Project Path="Src/Utilities/Domain/Domain.csproj" />
     <Project Path="Src/Utilities/Identification/Identification.csproj" />
   </Folder>
+  <Folder Name="/Src/Utilities/Repository/">
+    <Project Path="Src/Utilities/Repository/Repository.csproj" />
+  </Folder>
   <Folder Name="/Src/Utilities/CQRS/">
     <Project Path="Src/Utilities/CQRS/CQRS.Domain/CQRS.Domain.csproj" />
     <Project Path="Src/Utilities/CQRS/CQRS.Core/CQRS.Core.csproj" />
@@ -22,5 +25,6 @@
   <Folder Name="/Tests/Utilities/">
     <Project Path="Tests/Utilities/Identification.UnitTests/Identification.UnitTests.csproj" />
     <Project Path="Tests/Utilities/CQRS.UnitTests/CQRS.UnitTests.csproj" />
+    <Project Path="Tests/Utilities/Repository.UnitTests/Repository.UnitTests.csproj" />
   </Folder>
 </Solution>
