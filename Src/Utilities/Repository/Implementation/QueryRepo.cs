@@ -29,7 +29,6 @@ public abstract class QueryRepo<TCtx> : IQueryRepo where TCtx : DbContext
     public virtual IQueryable<T> GetQueryable<T>() where T : class
     {
         return _context.Set<T>()
-            .AsNoTracking()
             .AsSingleQuery();
     }
 }
