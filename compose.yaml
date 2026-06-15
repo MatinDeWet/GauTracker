@@ -26,8 +26,8 @@
       postgres:
         condition: service_healthy
     environment:
+      ASPNETCORE_ENVIRONMENT: Development
       ConnectionStrings__GauDB: Host=postgres;Port=5432;Database=gau_db;Username=gau_user;Password=gau_password
     ports:
       - "8080:8080"
-      - "8081:8081"
 
