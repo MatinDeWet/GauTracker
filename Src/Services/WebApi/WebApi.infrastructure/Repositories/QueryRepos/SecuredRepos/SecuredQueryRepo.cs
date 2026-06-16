@@ -11,4 +11,6 @@ internal sealed class SecuredQueryRepo(GauContext context, IIdentityInfo info, I
     : SecureQueryRepo<GauContext>(context, info, protection), ISecuredQueryRepo
 {
     public IQueryable<User> Users => GetQueryable<User>();
+
+    public IQueryable<Card> Cards => GetQueryable<Card>();
 }

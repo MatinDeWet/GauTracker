@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using Caching;
 using WebApi.Application;
 using WebApi.infrastructure;
@@ -9,6 +10,9 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddApplicationServices(this IServiceCollection services, IConfiguration configuration, IWebHostEnvironment environment)
     {
         bool isDevelopmentOrStaging = environment.IsDevelopment() || environment.IsStaging();
+
+        services.ConfigureHttpJsonOptions(options =>
+            options.SerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 
         services.AddApiDocumentation();
         services.AddJwtAuthentication(configuration);
