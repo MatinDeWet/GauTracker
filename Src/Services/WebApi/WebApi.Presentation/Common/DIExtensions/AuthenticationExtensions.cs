@@ -25,6 +25,7 @@ public static class AuthenticationExtensions
                 options.Authority = settings.Authority;
                 options.Audience = settings.Audience;
                 options.RequireHttpsMetadata = settings.RequireHttpsMetadata;
+                options.MapInboundClaims = false;
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuer = true,
