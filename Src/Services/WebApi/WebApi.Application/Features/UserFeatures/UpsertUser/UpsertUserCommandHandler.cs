@@ -18,12 +18,12 @@ internal sealed class UpsertUserCommandHandler(
 
         if (user is not null)
         {
-            return Result.Success(new UpsertUserResponse(user.Id, user.IdentityId));
+            return new UpsertUserResponse(user.Id, user.IdentityId);
         }
 
         user = User.Create(request.ExternalId);
         await commandRepo.InsertAsync(user, persistImmediately: true, cancellationToken);
 
-        return Result.Success(new UpsertUserResponse(user.Id, user.IdentityId));
+        return new UpsertUserResponse(user.Id, user.IdentityId);
     }
 }

@@ -19,6 +19,6 @@ internal sealed class GetUserQueryHandler(ISecuredQueryRepo queryRepo)
             return Result.NotFound();
         }
 
-        return Result.Success(user);
+        return user;
     }
 }
