@@ -89,6 +89,25 @@ internal sealed class SeaweedBlobStorageService : IBlobStorageService
         return new BlobUploadTicket(key, new Uri(url), expiresAt);
     }
 
+    public async Task<BlobMetadata?> GetMetadataAsync(string container, string key, CancellationToken cancellationToken = default)
+    {
+        ArgumentException.ThrowIfNullOrEmpty(container);
+        ArgumentException.ThrowIfNullOrEmpty(key);
+
+        try
+        {
+            GetObjectMetadataResponse response = await _s3.GetObjectMetadataAsync(
+                new GetObjectMetadataRequest { BucketName = container, Key = key },
+                cancellationToken);
+
+            return new BlobMetadata(key, response.Headers.ContentType, response.ContentLength);
+        }
+        catch (AmazonS3Exception ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
+        {
+            return null;
+        }
+    }
+
     [SuppressMessage(
         "Reliability",
         "CA2000:Dispose objects before losing scope",

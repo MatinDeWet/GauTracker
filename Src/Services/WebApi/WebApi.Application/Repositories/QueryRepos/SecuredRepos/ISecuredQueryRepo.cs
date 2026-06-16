@@ -12,4 +12,6 @@ public interface ISecuredQueryRepo : ISecureQueryRepo
     IQueryable<User> Users { get; }
 
     IQueryable<Card> Cards { get; }
+
+    IQueryable<TravelHistoryFile> TravelHistoryFiles { get; }
 }

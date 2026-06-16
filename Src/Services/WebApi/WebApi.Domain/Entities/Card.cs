@@ -7,9 +7,11 @@ namespace WebApi.Domain.Entities;
 public class Card : Entity<long>
 {
     public long UserId { get; private set; }
-    
+
     public virtual User User { get; private set; } = null!;
-    
+
+    public virtual ICollection<TravelHistoryFile> TravelHistoryFiles { get; private set; } = [];
+
     public string Name { get; private set; }
     
     public string Number { get; private set; }

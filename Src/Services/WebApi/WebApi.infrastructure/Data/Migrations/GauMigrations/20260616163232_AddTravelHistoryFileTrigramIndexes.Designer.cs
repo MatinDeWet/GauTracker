@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using WebApi.infrastructure.Data.Contexts;
@@ -11,9 +12,11 @@ using WebApi.infrastructure.Data.Contexts;
 namespace WebApi.infrastructure.Data.Migrations.GauMigrations
 {
     [DbContext(typeof(GauContext))]
-    partial class GauContextModelSnapshot : ModelSnapshot
+    [Migration("20260616163232_AddTravelHistoryFileTrigramIndexes")]
+    partial class AddTravelHistoryFileTrigramIndexes
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

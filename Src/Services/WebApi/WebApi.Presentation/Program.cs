@@ -1,6 +1,7 @@
 using WebApi.Presentation.Common.DIExtensions;
 using WebApi.Presentation.Common.Middleware;
 using WebApi.Presentation.Endpoints.CardEndpoints;
+using WebApi.Presentation.Endpoints.TravelHistoryFileEndpoints;
 using WebApi.Presentation.Endpoints.UserEndpoints;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
@@ -23,6 +24,7 @@ app.UseMiddleware<CurrentUserMiddleware>();
 
 app.MapUserEndpoints();
 app.MapCardEndpoints();
+app.MapTravelHistoryFileEndpoints();
 
 await app.ApplyDatabaseMigrationsAsync();
 
