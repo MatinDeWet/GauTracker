@@ -37,6 +37,12 @@ public interface IBlobStorageService
         CancellationToken cancellationToken = default);
 
     /// <summary>
+    /// Fetches a blob's metadata (content type and length) without downloading its payload.
+    /// Returns <c>null</c> if the blob does not exist.
+    /// </summary>
+    Task<BlobMetadata?> GetMetadataAsync(string container, string key, CancellationToken cancellationToken = default);
+
+    /// <summary>
     /// Downloads a blob directly. The returned <see cref="BlobContent.Content"/> stream is
     /// owned by the caller and must be disposed.
     /// </summary>

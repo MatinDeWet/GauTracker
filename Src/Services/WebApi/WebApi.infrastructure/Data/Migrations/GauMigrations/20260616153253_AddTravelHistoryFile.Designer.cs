@@ -2,8 +2,10 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
+using NpgsqlTypes;
 using WebApi.infrastructure.Data.Contexts;
 
 #nullable disable
@@ -11,16 +13,17 @@ using WebApi.infrastructure.Data.Contexts;
 namespace WebApi.infrastructure.Data.Migrations.GauMigrations
 {
     [DbContext(typeof(GauContext))]
-    partial class GauContextModelSnapshot : ModelSnapshot
+    [Migration("20260616153253_AddTravelHistoryFile")]
+    partial class AddTravelHistoryFile
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "10.0.9")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
-            NpgsqlModelBuilderExtensions.HasPostgresExtension(modelBuilder, "pg_trgm");
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
             modelBuilder.Entity("WebApi.Domain.Entities.Card", b =>
@@ -98,6 +101,13 @@ namespace WebApi.infrastructure.Data.Migrations.GauMigrations
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
 
+                    b.Property<NpgsqlTsVector>("SearchVector")
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("tsvector")
+                        .HasAnnotation("Npgsql:TsVectorConfig", "english")
+                        .HasAnnotation("Npgsql:TsVectorProperties", new[] { "FileName", "DisplayName" });
+
                     b.Property<long?>("SizeInBytes")
                         .HasColumnType("bigint");
 
@@ -113,15 +123,9 @@ namespace WebApi.infrastructure.Data.Migrations.GauMigrations
 
                     b.HasIndex("CardId");
 
-                    b.HasIndex("DisplayName");
+                    b.HasIndex("SearchVector");
 
-                    NpgsqlIndexBuilderExtensions.HasMethod(b.HasIndex("DisplayName"), "gin");
-                    NpgsqlIndexBuilderExtensions.HasOperators(b.HasIndex("DisplayName"), new[] { "gin_trgm_ops" });
-
-                    b.HasIndex("FileName");
-
-                    NpgsqlIndexBuilderExtensions.HasMethod(b.HasIndex("FileName"), "gin");
-                    NpgsqlIndexBuilderExtensions.HasOperators(b.HasIndex("FileName"), new[] { "gin_trgm_ops" });
+                    NpgsqlIndexBuilderExtensions.HasMethod(b.HasIndex("SearchVector"), "GIN");
 
                     b.ToTable("TravelHistoryFile", "public");
                 });

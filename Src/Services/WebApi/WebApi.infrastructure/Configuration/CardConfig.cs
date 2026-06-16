@@ -27,5 +27,9 @@ public class CardConfig: IEntityTypeConfiguration<Card>
         entity.HasOne(x => x.User)
             .WithMany(x => x.Cards)
             .HasForeignKey(x => x.UserId);
+
+        entity.HasMany(x => x.TravelHistoryFiles)
+            .WithOne(x => x.Card)
+            .HasForeignKey(x => x.CardId);
     }
 }

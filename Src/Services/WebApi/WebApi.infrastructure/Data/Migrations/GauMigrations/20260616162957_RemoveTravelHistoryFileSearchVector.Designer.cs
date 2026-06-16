@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using WebApi.infrastructure.Data.Contexts;
@@ -11,16 +12,17 @@ using WebApi.infrastructure.Data.Contexts;
 namespace WebApi.infrastructure.Data.Migrations.GauMigrations
 {
     [DbContext(typeof(GauContext))]
-    partial class GauContextModelSnapshot : ModelSnapshot
+    [Migration("20260616162957_RemoveTravelHistoryFileSearchVector")]
+    partial class RemoveTravelHistoryFileSearchVector
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "10.0.9")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
-            NpgsqlModelBuilderExtensions.HasPostgresExtension(modelBuilder, "pg_trgm");
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
             modelBuilder.Entity("WebApi.Domain.Entities.Card", b =>
@@ -112,16 +114,6 @@ namespace WebApi.infrastructure.Data.Migrations.GauMigrations
                         .IsUnique();
 
                     b.HasIndex("CardId");
-
-                    b.HasIndex("DisplayName");
-
-                    NpgsqlIndexBuilderExtensions.HasMethod(b.HasIndex("DisplayName"), "gin");
-                    NpgsqlIndexBuilderExtensions.HasOperators(b.HasIndex("DisplayName"), new[] { "gin_trgm_ops" });
-
-                    b.HasIndex("FileName");
-
-                    NpgsqlIndexBuilderExtensions.HasMethod(b.HasIndex("FileName"), "gin");
-                    NpgsqlIndexBuilderExtensions.HasOperators(b.HasIndex("FileName"), new[] { "gin_trgm_ops" });
 
                     b.ToTable("TravelHistoryFile", "public");
                 });

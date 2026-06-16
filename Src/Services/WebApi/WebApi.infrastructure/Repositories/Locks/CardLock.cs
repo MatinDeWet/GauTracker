@@ -12,7 +12,9 @@ internal sealed class CardLock(GauContext context) : Lock<Card>
 {
     public override IQueryable<Card> Secured(long userId)
     {
-        return context.Set<Card>().Where(x => x.UserId == userId);
+        return from card in context.Set<Card>()
+               where card.UserId == userId
+               select card;
     }
 
     public override Task<bool> HasAccess(Card obj, long userId, RepositoryOperationEnum operation, CancellationToken cancellationToken)

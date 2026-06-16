@@ -17,7 +17,10 @@ public class GauContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
-        
+
+        // Trigram extension backing the case-insensitive ILIKE '%...%' searches (e.g. travel-history file names).
+        modelBuilder.HasPostgresExtension("pg_trgm");
+
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(GauContext).Assembly);
     }
 }

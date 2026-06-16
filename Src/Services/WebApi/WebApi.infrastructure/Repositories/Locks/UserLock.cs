@@ -12,7 +12,9 @@ internal sealed class UserLock(GauContext context) : Lock<User>
 {
     public override IQueryable<User> Secured(long userId)
     {
-        return context.Set<User>().Where(x => x.Id == userId);
+        return from user in context.Set<User>()
+               where user.Id == userId
+               select user;
     }
 
     public override Task<bool> HasAccess(User obj, long userId, RepositoryOperationEnum operation, CancellationToken cancellationToken)

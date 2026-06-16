@@ -1,0 +1,3 @@
+namespace WebApi.Application.Features.TravelHistoryFileFeatures.GetTravelHistoryFileDownloadUrl;
+
+public sealed record GetTravelHistoryFileDownloadUrlResponse(string FileName, Uri DownloadUrl, DateTimeOffset ExpiresAt);
