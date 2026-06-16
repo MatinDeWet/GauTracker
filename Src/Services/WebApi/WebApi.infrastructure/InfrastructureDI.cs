@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Repository;
 using WebApi.infrastructure.Constants;
 using WebApi.infrastructure.Data.Contexts;
 
@@ -11,7 +12,21 @@ namespace WebApi.infrastructure;
 
 public static class InfrastructureDI
 {
-    public static IServiceCollection AddDatabase(this IServiceCollection services, IConfiguration configuration, bool IsDevelopment)
+    /// <summary>
+    /// Registers the infrastructure layer: the database context and the secured/unsecured
+    /// repositories (and their entity protections) discovered in this assembly.
+    /// </summary>
+    public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration, bool IsDevelopment)
+    {
+        services.AddDatabase(configuration, IsDevelopment);
+
+        services.AddRepositories(typeof(GauContext));
+        services.AddSecuredRepositories(typeof(GauContext));
+
+        return services;
+    }
+
+    private static IServiceCollection AddDatabase(this IServiceCollection services, IConfiguration configuration, bool IsDevelopment)
     {
         services.AddDbContext<GauContext>((sp, options) =>
         {

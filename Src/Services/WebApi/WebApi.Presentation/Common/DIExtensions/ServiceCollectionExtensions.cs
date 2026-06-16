@@ -1,3 +1,5 @@
+using Caching;
+using WebApi.Application;
 using WebApi.infrastructure;
 
 namespace WebApi.Presentation.Common.DIExtensions;
@@ -10,8 +12,11 @@ public static class ServiceCollectionExtensions
 
         services.AddApiDocumentation();
         services.AddJwtAuthentication(configuration);
-        services.AddDatabase(configuration, isDevelopmentOrStaging);
+
+        services.AddApplication();
+        services.AddInfrastructure(configuration, isDevelopmentOrStaging);
+        services.AddCachingSupport(configuration);
 
         return services;
-    }   
+    }
 }
