@@ -5,6 +5,7 @@ using Amazon.S3.Util;
 using BlobStorage.Configuration;
 using BlobStorage.Contracts;
 using BlobStorage.Contracts.Models;
+using BlobStorage.Logging;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -13,7 +14,7 @@ namespace BlobStorage.Implementation;
 /// <summary>
 /// <see cref="IBlobStorageService"/> backed by an S3-compatible SeaweedFS endpoint.
 /// </summary>
-internal sealed partial class SeaweedBlobStorageService : IBlobStorageService
+internal sealed class SeaweedBlobStorageService : IBlobStorageService
 {
     private readonly IAmazonS3 _s3;
     private readonly BlobStorageOptions _options;
@@ -136,29 +137,16 @@ internal sealed partial class SeaweedBlobStorageService : IBlobStorageService
         try
         {
             await _s3.PutBucketAsync(new PutBucketRequest { BucketName = container }, cancellationToken);
-            LogContainerCreated(container);
+            _logger.ContainerCreated(container);
         }
         catch (AmazonS3Exception ex) when (ex is BucketAlreadyOwnedByYouException or BucketAlreadyExistsException)
         {
-            // The bucket was created by a concurrent caller between the existence check and the
-            // create call. That is the desired end state, so treat it as success.
-            LogContainerCreatedConcurrently(container);
+            _logger.ContainerCreatedConcurrently(container);
         }
         catch (AmazonS3Exception ex)
         {
-            // Any other S3 failure (auth, connectivity, refused name) is genuine — log it with
-            // context and let it propagate so the caller's create operation fails loudly.
-            LogContainerCreateFailed(ex, container);
+            _logger.ContainerCreateFailed(ex, container);
             throw;
         }
     }
-
-    [LoggerMessage(Level = LogLevel.Information, Message = "Created blob container '{Container}'.")]
-    private partial void LogContainerCreated(string container);
-
-    [LoggerMessage(Level = LogLevel.Debug, Message = "Blob container '{Container}' already existed (created concurrently).")]
-    private partial void LogContainerCreatedConcurrently(string container);
-
-    [LoggerMessage(Level = LogLevel.Error, Message = "Failed to create blob container '{Container}'.")]
-    private partial void LogContainerCreateFailed(Exception exception, string container);
 }
