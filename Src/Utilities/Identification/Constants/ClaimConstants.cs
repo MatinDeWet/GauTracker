@@ -4,7 +4,7 @@ namespace Identification.Constants;
 
 public static class ClaimConstants
 {
-    public const string ExternalUserId = "http://schemas.microsoft.com/identity/claims/objectidentifier";
+    public const string ExternalUserId = "sub";
 
     public const string InternalUserId = "user_id";
 
