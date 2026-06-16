@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+using BlobStorage;
 using Caching;
 using WebApi.Application;
 using WebApi.infrastructure;
@@ -20,6 +21,7 @@ public static class ServiceCollectionExtensions
         services.AddApplication();
         services.AddInfrastructure(configuration, isDevelopmentOrStaging);
         services.AddCachingSupport(configuration);
+        services.AddBlobStorage(configuration);
 
         return services;
     }
