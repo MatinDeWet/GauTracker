@@ -1,6 +1,7 @@
 using Ardalis.Result;
 using Ardalis.Result.AspNetCore;
 using CQRS.Core.Contracts;
+using Microsoft.AspNetCore.Mvc;
 using WebApi.Application.Features.CardFeatures.CreateCard;
 
 namespace WebApi.Presentation.Endpoints.CardEndpoints;
@@ -17,8 +18,8 @@ internal static class CreateCardEndpoint
     }
 
     private static async Task<Microsoft.AspNetCore.Http.IResult> CreateCard(
-        CreateCardCommand command,
-        ICommandManager<CreateCardCommand, CreateCardResponse> handler,
+        [FromBody] CreateCardCommand command,
+        [FromServices] ICommandManager<CreateCardCommand, CreateCardResponse> handler,
         CancellationToken cancellationToken)
     {
         Result<CreateCardResponse> result = await handler.Handle(command, cancellationToken);

@@ -1,6 +1,7 @@
 using Ardalis.Result;
 using Ardalis.Result.AspNetCore;
 using CQRS.Core.Contracts;
+using Microsoft.AspNetCore.Mvc;
 using WebApi.Application.Features.CardFeatures.UpdateCard;
 
 namespace WebApi.Presentation.Endpoints.CardEndpoints;
@@ -17,9 +18,9 @@ internal static class UpdateCardEndpoint
     }
 
     private static async Task<Microsoft.AspNetCore.Http.IResult> UpdateCard(
-        long id,
-        UpdateCardRequest request,
-        ICommandManager<UpdateCardCommand> handler,
+        [FromRoute] long id,
+        [FromBody] UpdateCardRequest request,
+        [FromServices] ICommandManager<UpdateCardCommand> handler,
         CancellationToken cancellationToken)
     {
         UpdateCardCommand command = new(id, request.Name, request.Number, request.ExpiryDate);

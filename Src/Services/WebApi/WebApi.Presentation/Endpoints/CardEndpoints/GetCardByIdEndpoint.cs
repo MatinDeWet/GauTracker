@@ -1,6 +1,7 @@
 using Ardalis.Result;
 using Ardalis.Result.AspNetCore;
 using CQRS.Core.Contracts;
+using Microsoft.AspNetCore.Mvc;
 using WebApi.Application.Features.CardFeatures.GetCardById;
 
 namespace WebApi.Presentation.Endpoints.CardEndpoints;
@@ -17,8 +18,8 @@ internal static class GetCardByIdEndpoint
     }
 
     private static async Task<Microsoft.AspNetCore.Http.IResult> GetCardById(
-        long id,
-        IQueryManager<GetCardByIdQuery, GetCardByIdResponse> handler,
+        [FromRoute] long id,
+        [FromServices] IQueryManager<GetCardByIdQuery, GetCardByIdResponse> handler,
         CancellationToken cancellationToken)
     {
         Result<GetCardByIdResponse> result = await handler.Handle(new GetCardByIdQuery(id), cancellationToken);

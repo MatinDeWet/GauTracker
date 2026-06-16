@@ -1,6 +1,7 @@
 using Ardalis.Result;
 using Ardalis.Result.AspNetCore;
 using CQRS.Core.Contracts;
+using Microsoft.AspNetCore.Mvc;
 using WebApi.Application.Features.CardFeatures.DeleteCard;
 
 namespace WebApi.Presentation.Endpoints.CardEndpoints;
@@ -17,8 +18,8 @@ internal static class DeleteCardEndpoint
     }
 
     private static async Task<Microsoft.AspNetCore.Http.IResult> DeleteCard(
-        long id,
-        ICommandManager<DeleteCardCommand> handler,
+        [FromRoute] long id,
+        [FromServices] ICommandManager<DeleteCardCommand> handler,
         CancellationToken cancellationToken)
     {
         Result result = await handler.Handle(new DeleteCardCommand(id), cancellationToken);
