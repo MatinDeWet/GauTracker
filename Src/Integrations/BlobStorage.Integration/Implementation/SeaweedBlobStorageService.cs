@@ -5,6 +5,7 @@ using Amazon.S3.Util;
 using BlobStorage.Configuration;
 using BlobStorage.Contracts;
 using BlobStorage.Contracts.Models;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace BlobStorage.Implementation;
@@ -12,15 +13,20 @@ namespace BlobStorage.Implementation;
 /// <summary>
 /// <see cref="IBlobStorageService"/> backed by an S3-compatible SeaweedFS endpoint.
 /// </summary>
-internal sealed class SeaweedBlobStorageService : IBlobStorageService
+internal sealed partial class SeaweedBlobStorageService : IBlobStorageService
 {
     private readonly IAmazonS3 _s3;
     private readonly BlobStorageOptions _options;
+    private readonly ILogger<SeaweedBlobStorageService> _logger;
 
-    public SeaweedBlobStorageService(IAmazonS3 s3, IOptions<BlobStorageOptions> options)
+    public SeaweedBlobStorageService(
+        IAmazonS3 s3,
+        IOptions<BlobStorageOptions> options,
+        ILogger<SeaweedBlobStorageService> logger)
     {
         _s3 = s3;
         _options = options.Value;
+        _logger = logger;
     }
 
     public async Task DeleteAsync(string container, string key, CancellationToken cancellationToken = default)
@@ -130,14 +136,29 @@ internal sealed class SeaweedBlobStorageService : IBlobStorageService
         try
         {
             await _s3.PutBucketAsync(new PutBucketRequest { BucketName = container }, cancellationToken);
+            LogContainerCreated(container);
         }
-        catch (BucketAlreadyOwnedByYouException)
+        catch (AmazonS3Exception ex) when (ex is BucketAlreadyOwnedByYouException or BucketAlreadyExistsException)
         {
-            // Another caller created the bucket between the existence check and this call.
+            // The bucket was created by a concurrent caller between the existence check and the
+            // create call. That is the desired end state, so treat it as success.
+            LogContainerCreatedConcurrently(container);
         }
-        catch (BucketAlreadyExistsException)
+        catch (AmazonS3Exception ex)
         {
-            // Another caller created the bucket between the existence check and this call.
+            // Any other S3 failure (auth, connectivity, refused name) is genuine — log it with
+            // context and let it propagate so the caller's create operation fails loudly.
+            LogContainerCreateFailed(ex, container);
+            throw;
         }
     }
+
+    [LoggerMessage(Level = LogLevel.Information, Message = "Created blob container '{Container}'.")]
+    private partial void LogContainerCreated(string container);
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Blob container '{Container}' already existed (created concurrently).")]
+    private partial void LogContainerCreatedConcurrently(string container);
+
+    [LoggerMessage(Level = LogLevel.Error, Message = "Failed to create blob container '{Container}'.")]
+    private partial void LogContainerCreateFailed(Exception exception, string container);
 }
