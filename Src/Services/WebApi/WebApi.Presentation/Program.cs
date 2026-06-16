@@ -1,4 +1,6 @@
 using WebApi.Presentation.Common.DIExtensions;
+using WebApi.Presentation.Common.Middleware;
+using WebApi.Presentation.Endpoints.UserEndpoints;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
@@ -15,6 +17,10 @@ if (app.Environment.IsDevelopment())
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.UseMiddleware<CurrentUserMiddleware>();
+
+app.MapUserEndpoints();
 
 await app.ApplyDatabaseMigrationsAsync();
 

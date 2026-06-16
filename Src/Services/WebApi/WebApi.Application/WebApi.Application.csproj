@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <TargetFramework>net10.0</TargetFramework>
@@ -8,6 +8,9 @@
 
     <ItemGroup>
       <ProjectReference Include="..\WebApi.Domain\WebApi.Domain.csproj" />
+      <ProjectReference Include="..\..\..\Utilities\CQRS\CQRS.Core\CQRS.Core.csproj" />
+      <ProjectReference Include="..\..\..\Utilities\Repository\Repository.csproj" />
+      <ProjectReference Include="..\..\..\Utilities\Identification\Identification.csproj" />
     </ItemGroup>
 
 </Project>

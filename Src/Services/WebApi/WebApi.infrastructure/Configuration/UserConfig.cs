@@ -15,7 +15,14 @@ internal sealed class UserConfig : IEntityTypeConfiguration<User>
         
         entity.Property(x => x.Id)
             .ValueGeneratedOnAdd();
-        
+
+        entity.Property(x => x.IdentityId)
+            .HasMaxLength(256)
+            .IsRequired();
+
+        entity.HasIndex(x => x.IdentityId)
+            .IsUnique();
+
         entity.HasMany(x => x.Cards)
             .WithOne(x => x.User)
             .HasForeignKey(x => x.UserId);
