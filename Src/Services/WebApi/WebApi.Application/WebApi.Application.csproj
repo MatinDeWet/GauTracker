@@ -7,6 +7,10 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <PackageReference Include="MatinDeWet.Pagination" />
+    </ItemGroup>
+
+    <ItemGroup>
       <ProjectReference Include="..\WebApi.Domain\WebApi.Domain.csproj" />
       <ProjectReference Include="..\..\..\Utilities\CQRS\CQRS.Core\CQRS.Core.csproj" />
       <ProjectReference Include="..\..\..\Utilities\Repository\Repository.csproj" />
