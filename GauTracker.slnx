@@ -10,6 +10,9 @@
     <Project Path="Src/Services/WebApi/WebApi.infrastructure/WebApi.infrastructure.csproj" />
     <Project Path="Src/Services/WebApi/WebApi.Presentation/WebApi.Presentation.csproj" />
   </Folder>
+  <Folder Name="/Src/Integrations/">
+    <Project Path="Src/Integrations/BlobStorage.Integration/BlobStorage.Integration.csproj" />
+  </Folder>
   <Folder Name="/Src/Utilities/">
     <Project Path="Src/Utilities/Caching/Caching.csproj" />
     <Project Path="Src/Utilities/Domain/Domain.csproj" />
