@@ -1,6 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 using Amazon.S3;
 using Amazon.S3.Model;
+using Amazon.S3.Util;
 using BlobStorage.Configuration;
 using BlobStorage.Contracts;
 using BlobStorage.Contracts.Models;
@@ -43,6 +44,8 @@ internal sealed class SeaweedBlobStorageService : IBlobStorageService
         ArgumentException.ThrowIfNullOrEmpty(key);
         ArgumentNullException.ThrowIfNull(content);
 
+        await EnsureContainerExistsAsync(container, cancellationToken);
+
         var request = new PutObjectRequest
         {
             BucketName = container,
@@ -55,14 +58,20 @@ internal sealed class SeaweedBlobStorageService : IBlobStorageService
         await _s3.PutObjectAsync(request, cancellationToken);
     }
 
-    public BlobUploadTicket CreateUploadUrl(string container, string key, TimeSpan? expiry = null)
+    public async Task<BlobUploadTicket> CreateUploadUrlAsync(
+        string container,
+        string key,
+        TimeSpan? expiry = null,
+        CancellationToken cancellationToken = default)
     {
         ArgumentException.ThrowIfNullOrEmpty(container);
         ArgumentException.ThrowIfNullOrEmpty(key);
 
+        await EnsureContainerExistsAsync(container, cancellationToken);
+
         DateTimeOffset expiresAt = DateTimeOffset.UtcNow.Add(expiry ?? _options.PresignedUrlExpiry);
 
-        string url = _s3.GetPreSignedURL(new GetPreSignedUrlRequest
+        string url = await _s3.GetPreSignedURLAsync(new GetPreSignedUrlRequest
         {
             BucketName = container,
             Key = key,
@@ -109,5 +118,26 @@ internal sealed class SeaweedBlobStorageService : IBlobStorageService
         });
 
         return new BlobDownloadTicket(key, new Uri(url), expiresAt);
+    }
+
+    private async Task EnsureContainerExistsAsync(string container, CancellationToken cancellationToken)
+    {
+        if (await AmazonS3Util.DoesS3BucketExistV2Async(_s3, container))
+        {
+            return;
+        }
+
+        try
+        {
+            await _s3.PutBucketAsync(new PutBucketRequest { BucketName = container }, cancellationToken);
+        }
+        catch (BucketAlreadyOwnedByYouException)
+        {
+            // Another caller created the bucket between the existence check and this call.
+        }
+        catch (BucketAlreadyExistsException)
+        {
+            // Another caller created the bucket between the existence check and this call.
+        }
     }
 }

@@ -14,8 +14,9 @@ public interface IBlobStorageService
     Task DeleteAsync(string container, string key, CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// Uploads a blob directly from a stream. The caller retains ownership of
-    /// <paramref name="content"/> and is responsible for disposing it.
+    /// Uploads a blob directly from a stream, creating the container if it does not exist.
+    /// The caller retains ownership of <paramref name="content"/> and is responsible for
+    /// disposing it.
     /// </summary>
     Task UploadAsync(
         string container,
@@ -25,10 +26,15 @@ public interface IBlobStorageService
         CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// Reserves a key and returns a short-lived presigned PUT URL so a client can upload
-    /// directly to SeaweedFS. The blob materializes when the client uploads to the URL.
+    /// Ensures the container exists (creating it if needed), then reserves a key and returns a
+    /// short-lived presigned PUT URL so a client can upload directly to SeaweedFS. The blob
+    /// materializes when the client uploads to the URL.
     /// </summary>
-    BlobUploadTicket CreateUploadUrl(string container, string key, TimeSpan? expiry = null);
+    Task<BlobUploadTicket> CreateUploadUrlAsync(
+        string container,
+        string key,
+        TimeSpan? expiry = null,
+        CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Downloads a blob directly. The returned <see cref="BlobContent.Content"/> stream is
