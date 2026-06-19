@@ -3,8 +3,10 @@
 ##
 ## Get latest from `dotnet new gitignore`
 
-# dotenv files
+# dotenv files (real per-service values are ignored; *.example templates are committed)
 .env
+.env.*
+!.env.*.example
 
 # Docker local data
 DockerData/Database/*

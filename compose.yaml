@@ -5,7 +5,7 @@ services:
       context: .
       dockerfile: Src/Services/WebApi/WebApi.Presentation/Dockerfile
     env_file:
-      - .env
+      - .env.api
     environment:
       ASPNETCORE_ENVIRONMENT: Development
     ports:
@@ -25,7 +25,7 @@ services:
       context: .
       dockerfile: Src/Services/Worker/Worker.Presentation/Dockerfile
     env_file:
-      - .env
+      - .env.worker
     environment:
       ASPNETCORE_ENVIRONMENT: Development
     ports:
