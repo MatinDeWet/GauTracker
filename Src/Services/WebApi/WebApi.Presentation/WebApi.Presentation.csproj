@@ -25,9 +25,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\WebApi.infrastructure\WebApi.infrastructure.csproj" />
-      <ProjectReference Include="..\..\..\Utilities\CQRS\CQRS.Core\CQRS.Core.csproj" />
       <ProjectReference Include="..\..\..\Utilities\Caching\Caching.csproj" />
-      <ProjectReference Include="..\..\..\Utilities\Identification\Identification.csproj" />
     </ItemGroup>
 
     <ItemGroup>

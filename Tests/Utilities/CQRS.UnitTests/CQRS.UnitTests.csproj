@@ -13,7 +13,6 @@
 		<PackageReference Include="coverlet.collector" />
 	</ItemGroup>
 	<ItemGroup>
-		<ProjectReference Include="..\..\..\Src\Utilities\CQRS\CQRS.Domain\CQRS.Domain.csproj" />
 		<ProjectReference Include="..\..\..\Src\Utilities\CQRS\CQRS.Core\CQRS.Core.csproj" />
 	</ItemGroup>
 </Project>
