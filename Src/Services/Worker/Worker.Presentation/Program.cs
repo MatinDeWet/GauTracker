@@ -1,17 +1,18 @@
-using Microsoft.Extensions.Hosting;
 using Worker.Application;
 using Worker.infrastructure;
 using Worker.Presentation.Common.DIExtensions;
 
-HostApplicationBuilder builder = Host.CreateApplicationBuilder(args);
+WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 bool isDevelopmentOrStaging = builder.Environment.IsDevelopment() || builder.Environment.IsStaging();
 
 builder.Services.AddWorkerApplication();
 builder.Services.AddWorkerInfrastructure(builder.Configuration, isDevelopmentOrStaging);
 
-IHost host = builder.Build();
+WebApplication app = builder.Build();
 
-host.RegisterRecurringJobs();
+app.UseWorkerDashboard();
 
-await host.RunAsync();
+app.RegisterRecurringJobs();
+
+await app.RunAsync();

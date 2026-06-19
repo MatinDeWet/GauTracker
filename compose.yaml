@@ -27,7 +27,9 @@ services:
     env_file:
       - .env
     environment:
-      DOTNET_ENVIRONMENT: Development
+      ASPNETCORE_ENVIRONMENT: Development
+    ports:
+      - "8081:8080"
     depends_on:
       - webapi.presentation
     deploy:
