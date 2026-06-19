@@ -10,6 +10,16 @@
     <Project Path="Src/Services/WebApi/WebApi.infrastructure/WebApi.infrastructure.csproj" />
     <Project Path="Src/Services/WebApi/WebApi.Presentation/WebApi.Presentation.csproj" />
   </Folder>
+  <Folder Name="/Src/Shared/">
+    <Project Path="Src/Shared/Shared.Domain/Shared.Domain.csproj" />
+    <Project Path="Src/Shared/Shared.Persistence/Shared.Persistence.csproj" />
+  </Folder>
+  <Folder Name="/Src/Services/Worker/">
+    <Project Path="Src/Services/Worker/Worker.Domain/Worker.Domain.csproj" />
+    <Project Path="Src/Services/Worker/Worker.Application/Worker.Application.csproj" />
+    <Project Path="Src/Services/Worker/Worker.infrastructure/Worker.infrastructure.csproj" />
+    <Project Path="Src/Services/Worker/Worker.Presentation/Worker.Presentation.csproj" />
+  </Folder>
   <Folder Name="/Src/Integrations/">
     <Project Path="Src/Integrations/BlobStorage.Integration/BlobStorage.Integration.csproj" />
   </Folder>

@@ -11,12 +11,8 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
-    </ItemGroup>
-
-    <ItemGroup>
       <ProjectReference Include="..\WebApi.Application\WebApi.Application.csproj" />
-      <ProjectReference Include="..\..\..\Utilities\Repository\Repository.csproj" />
+      <ProjectReference Include="..\..\..\Shared\Shared.Persistence\Shared.Persistence.csproj" />
     </ItemGroup>
 
 </Project>

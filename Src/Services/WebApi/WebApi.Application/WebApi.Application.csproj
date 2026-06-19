@@ -16,7 +16,6 @@
       <ProjectReference Include="..\..\..\Integrations\BlobStorage.Integration\BlobStorage.Integration.csproj" />
       <ProjectReference Include="..\..\..\Utilities\CQRS\CQRS.Core\CQRS.Core.csproj" />
       <ProjectReference Include="..\..\..\Utilities\Repository\Repository.csproj" />
-      <ProjectReference Include="..\..\..\Utilities\Identification\Identification.csproj" />
     </ItemGroup>
 
 </Project>

@@ -2,7 +2,7 @@ using Ardalis.Result;
 using CQRS.Core.Contracts;
 using Identification.Contracts;
 using WebApi.Application.Repositories.CommandRepos.SecuredRepos;
-using WebApi.Domain.Entities;
+using Shared.Domain.Entities;
 
 namespace WebApi.Application.Features.CardFeatures.CreateCard;
 

@@ -1,7 +1,7 @@
 using Repository.Enums;
 using Repository.Lock;
-using WebApi.Domain.Entities;
-using WebApi.infrastructure.Data.Contexts;
+using Shared.Domain.Entities;
+using Shared.Persistence.Data.Contexts;
 
 namespace WebApi.infrastructure.Repositories.Locks;
 

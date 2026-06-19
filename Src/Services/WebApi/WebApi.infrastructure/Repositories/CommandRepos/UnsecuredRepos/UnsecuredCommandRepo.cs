@@ -1,6 +1,6 @@
 using Repository.Implementation;
 using WebApi.Application.Repositories.CommandRepos.UnsecuredRepos;
-using WebApi.infrastructure.Data.Contexts;
+using Shared.Persistence.Data.Contexts;
 
 namespace WebApi.infrastructure.Repositories.CommandRepos.UnsecuredRepos;
 

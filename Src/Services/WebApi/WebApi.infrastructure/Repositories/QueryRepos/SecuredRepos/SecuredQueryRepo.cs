@@ -2,8 +2,8 @@ using Identification.Contracts;
 using Repository.Contracts;
 using Repository.Implementation;
 using WebApi.Application.Repositories.QueryRepos.SecuredRepos;
-using WebApi.Domain.Entities;
-using WebApi.infrastructure.Data.Contexts;
+using Shared.Domain.Entities;
+using Shared.Persistence.Data.Contexts;
 
 namespace WebApi.infrastructure.Repositories.QueryRepos.SecuredRepos;
 

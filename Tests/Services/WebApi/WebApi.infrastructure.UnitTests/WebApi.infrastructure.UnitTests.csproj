@@ -15,5 +15,6 @@
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\..\..\..\Src\Services\WebApi\WebApi.infrastructure\WebApi.infrastructure.csproj" />
+
 	</ItemGroup>
 </Project>

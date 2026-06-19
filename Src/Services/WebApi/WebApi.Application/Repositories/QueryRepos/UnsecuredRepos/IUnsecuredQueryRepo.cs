@@ -1,5 +1,5 @@
 using Repository.Contracts;
-using WebApi.Domain.Entities;
+using Shared.Domain.Entities;
 
 namespace WebApi.Application.Repositories.QueryRepos.UnsecuredRepos;
 

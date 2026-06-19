@@ -3,7 +3,7 @@ using CQRS.Core.Contracts;
 using Microsoft.EntityFrameworkCore;
 using WebApi.Application.Repositories.CommandRepos.UnsecuredRepos;
 using WebApi.Application.Repositories.QueryRepos.UnsecuredRepos;
-using WebApi.Domain.Entities;
+using Shared.Domain.Entities;
 
 namespace WebApi.Application.Features.UserFeatures.UpsertUser;
 
