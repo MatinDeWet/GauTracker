@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project
 
-GauTracker is an ASP.NET Core Web API on **.NET 10** (C#) backed by PostgreSQL via EF Core. It currently exposes one bounded service (`WebApi`) structured with Clean Architecture, plus a shared `Domain` utility library. The solution file is `GauTracker.slnx` (XML-based slnx format).
+GauTracker is a .NET 10 (C#) system backed by PostgreSQL via EF Core. It hosts **two Clean Architecture services** — an ASP.NET Core **`WebApi`** (HTTP API) and a **`Worker`** (Hangfire background jobs) — that share a common kernel (`Shared.Domain` + `Shared.Persistence`) and the same PostgreSQL database, alongside reusable `Utilities/*` libraries. The solution file is `GauTracker.slnx` (XML-based slnx format).
 
 ## Branching & Workflow
 
@@ -21,9 +21,10 @@ This repo follows **GitFlow** — see [CONTRIBUTING.md](CONTRIBUTING.md) for the
 All commands run from the solution root (`/GauTracker`).
 
 ```bash
-dotnet build                                             # build whole solution
-dotnet run --project Src/Services/WebApi/WebApi.Presentation   # run the API (OpenAPI at /openapi in Development)
-docker compose up                                        # Postgres + API together (see compose.yaml)
+dotnet build                                                   # build whole solution
+dotnet run --project Src/Services/WebApi/WebApi.Presentation    # run the API (OpenAPI at /openapi in Development)
+dotnet run --project Src/Services/Worker/Worker.Presentation    # run the Hangfire worker
+docker compose up                                              # API + Worker together (see compose.yaml)
 ```
 
 - **Warnings are errors.** `Directory.Build.props` sets `TreatWarningsAsErrors`, `AnalysisMode=All`, and `EnforceCodeStyleInBuild` for every project. A build fails on any analyzer or code-style violation, not just compile errors — fix them rather than suppressing.
@@ -31,7 +32,7 @@ docker compose up                                        # Postgres + API togeth
 - NuGet versions are centrally managed in `Directory.Packages.props` (`ManagePackageVersionsCentrally`). Reference packages with `<PackageReference Include="X" />` (no `Version`); add new versions to `Directory.Packages.props`.
 
 ### Tests
-There is no test project yet (the `/Tests/` solution folder is empty). When adding one, place it under `Tests/` and register it in `GauTracker.slnx`.
+Tests live under `Tests/` (xUnit v3 + Shouldly + NSubstitute), mirroring the source layout — e.g. `Tests/Services/WebApi/WebApi.infrastructure.UnitTests` and `Tests/Utilities/*`. Run the whole suite with `dotnet test`. When adding a test project, place it under `Tests/` and register it in `GauTracker.slnx`; `Directory.Build.props` names each project's TRX file after the project.
 
 ### Pre-commit hooks
 Commits are scanned for secrets via [pre-commit](https://pre-commit.com) (config in `.pre-commit-config.yaml`): a `gitleaks` secret scan plus `detect-private-key`, `check-added-large-files`, and `check-merge-conflict`. These hooks are intentionally non-mutating — formatting stays the job of `.editorconfig`/analyzers. Run `pre-commit install` once per clone; see `Docs/PreCommit.md` for the full reference.
