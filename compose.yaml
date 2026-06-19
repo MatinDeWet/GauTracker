@@ -10,6 +10,16 @@ services:
       ASPNETCORE_ENVIRONMENT: Development
     ports:
       - "8080:8080"
+    # Resource caps are honored by `docker compose up` (Compose v2). .NET reads the
+    # cgroup limits and sizes the GC heap / thread pool accordingly.
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 512M
+        reservations:
+          cpus: "0.25"
+          memory: 256M
 
   worker:
     image: gautracker.worker
@@ -24,3 +34,11 @@ services:
     depends_on:
       # Let the API apply EF migrations before the worker starts touching the schema.
       - webapi.presentation
+    deploy:
+      resources:
+        limits:
+          cpus: "0.50"
+          memory: 384M
+        reservations:
+          cpus: "0.10"
+          memory: 192M
