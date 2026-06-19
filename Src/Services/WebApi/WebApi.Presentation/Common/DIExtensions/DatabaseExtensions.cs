@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using WebApi.infrastructure.Data.Contexts;
+using Shared.Persistence.Data.Contexts;
 
 namespace WebApi.Presentation.Common.DIExtensions;
 

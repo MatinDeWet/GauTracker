@@ -1,4 +1,4 @@
-using WebApi.Domain.Enums;
+using Shared.Domain.Enums;
 
 namespace WebApi.Application.Features.TravelHistoryFileFeatures.GetTravelHistoryFileById;
 

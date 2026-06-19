@@ -3,7 +3,7 @@
 All commands should be run from the **solution root** (`/GauTracker`).
 
 - **Startup project**: `Src/Services/WebApi/WebApi.Presentation`
-- **Migrations project**: `Src/Services/WebApi/WebApi.infrastructure`
+- **Migrations project**: `Src/Shared/Shared.Persistence`
 - **DbContext**: `GauContext`
 
 ---
@@ -14,7 +14,7 @@ All commands should be run from the **solution root** (`/GauTracker`).
 
 ```bash
 dotnet ef migrations add <MigrationName> \
-  --project Src/Services/WebApi/WebApi.infrastructure \
+  --project Src/Shared/Shared.Persistence \
   --startup-project Src/Services/WebApi/WebApi.Presentation
 ```
 
@@ -22,7 +22,7 @@ dotnet ef migrations add <MigrationName> \
 
 ```bash
 dotnet ef migrations remove \
-  --project Src/Services/WebApi/WebApi.infrastructure \
+  --project Src/Shared/Shared.Persistence \
   --startup-project Src/Services/WebApi/WebApi.Presentation
 ```
 
@@ -30,7 +30,7 @@ dotnet ef migrations remove \
 
 ```bash
 dotnet ef database update \
-  --project Src/Services/WebApi/WebApi.infrastructure \
+  --project Src/Shared/Shared.Persistence \
   --startup-project Src/Services/WebApi/WebApi.Presentation
 ```
 
@@ -38,7 +38,7 @@ dotnet ef database update \
 
 ```bash
 dotnet ef database update <MigrationName> \
-  --project Src/Services/WebApi/WebApi.infrastructure \
+  --project Src/Shared/Shared.Persistence \
   --startup-project Src/Services/WebApi/WebApi.Presentation
 ```
 
@@ -46,7 +46,7 @@ dotnet ef database update <MigrationName> \
 
 ```bash
 dotnet ef database update <PreviousMigrationName> \
-  --project Src/Services/WebApi/WebApi.infrastructure \
+  --project Src/Shared/Shared.Persistence \
   --startup-project Src/Services/WebApi/WebApi.Presentation
 ```
 
@@ -56,7 +56,7 @@ dotnet ef database update <PreviousMigrationName> \
 
 ```bash
 dotnet ef migrations list \
-  --project Src/Services/WebApi/WebApi.infrastructure \
+  --project Src/Shared/Shared.Persistence \
   --startup-project Src/Services/WebApi/WebApi.Presentation
 ```
 
@@ -64,7 +64,7 @@ dotnet ef migrations list \
 
 ```bash
 dotnet ef migrations script \
-  --project Src/Services/WebApi/WebApi.infrastructure \
+  --project Src/Shared/Shared.Persistence \
   --startup-project Src/Services/WebApi/WebApi.Presentation \
   --output migrations.sql
 ```
@@ -73,7 +73,7 @@ dotnet ef migrations script \
 
 ```bash
 dotnet ef database drop \
-  --project Src/Services/WebApi/WebApi.infrastructure \
+  --project Src/Shared/Shared.Persistence \
   --startup-project Src/Services/WebApi/WebApi.Presentation
 ```
 
@@ -81,7 +81,7 @@ dotnet ef database drop \
 
 ## Notes
 
-- Migrations are stored in `Src/Services/WebApi/WebApi.infrastructure/Data/Migrations/GauMigrations/`.
+- Migrations are stored in `Src/Shared/Shared.Persistence/Data/Migrations/GauMigrations/`.
 - The migrations history table is stored in the `migrations` schema (`migrations.__EFMigrationsHistory`).
 - Make sure `dotnet-ef` is installed globally: `dotnet tool install --global dotnet-ef`
 - Migrations are automatically applied on startup via `app.ApplyDatabaseMigrationsAsync()` in `Program.cs`.

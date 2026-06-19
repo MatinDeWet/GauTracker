@@ -15,5 +15,8 @@
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\..\..\..\Src\Services\WebApi\WebApi.infrastructure\WebApi.infrastructure.csproj" />
+		<ProjectReference Include="..\..\..\..\Src\Shared\Shared.Domain\Shared.Domain.csproj" />
+		<ProjectReference Include="..\..\..\..\Src\Shared\Shared.Persistence\Shared.Persistence.csproj" />
+
 	</ItemGroup>
 </Project>

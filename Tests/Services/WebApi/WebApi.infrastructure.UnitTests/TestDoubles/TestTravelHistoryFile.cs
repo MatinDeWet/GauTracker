@@ -1,4 +1,4 @@
-using WebApi.Domain.Entities;
+using Shared.Domain.Entities;
 
 namespace WebApi.infrastructure.UnitTests.TestDoubles;
 

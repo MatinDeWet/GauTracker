@@ -5,7 +5,7 @@ using Pagination.Models.Responses;
 using Searchable.PostgreSQL;
 using Searchable.PostgreSQL.Enums;
 using WebApi.Application.Repositories.QueryRepos.SecuredRepos;
-using WebApi.Domain.Entities;
+using Shared.Domain.Entities;
 
 namespace WebApi.Application.Features.TravelHistoryFileFeatures.SearchTravelHistoryFiles;
 

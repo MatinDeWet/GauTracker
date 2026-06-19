@@ -4,7 +4,7 @@ using CQRS.Core.Contracts;
 using Microsoft.EntityFrameworkCore;
 using WebApi.Application.Repositories.CommandRepos.SecuredRepos;
 using WebApi.Application.Repositories.QueryRepos.SecuredRepos;
-using WebApi.Domain.Entities;
+using Shared.Domain.Entities;
 
 namespace WebApi.Application.Features.TravelHistoryFileFeatures.DeleteTravelHistoryFile;
 

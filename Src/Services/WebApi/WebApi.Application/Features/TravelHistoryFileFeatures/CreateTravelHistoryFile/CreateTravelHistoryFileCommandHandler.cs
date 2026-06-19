@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using WebApi.Application.Common.Constants;
 using WebApi.Application.Repositories.CommandRepos.SecuredRepos;
 using WebApi.Application.Repositories.QueryRepos.SecuredRepos;
-using WebApi.Domain.Entities;
+using Shared.Domain.Entities;
 
 namespace WebApi.Application.Features.TravelHistoryFileFeatures.CreateTravelHistoryFile;
 
