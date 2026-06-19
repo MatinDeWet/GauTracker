@@ -10,8 +10,6 @@ services:
       ASPNETCORE_ENVIRONMENT: Development
     ports:
       - "8080:8080"
-    # Resource caps are honored by `docker compose up` (Compose v2). .NET reads the
-    # cgroup limits and sizes the GC heap / thread pool accordingly.
     deploy:
       resources:
         limits:
@@ -29,10 +27,8 @@ services:
     env_file:
       - .env
     environment:
-      # Generic host reads DOTNET_ENVIRONMENT (not ASPNETCORE_ENVIRONMENT).
       DOTNET_ENVIRONMENT: Development
     depends_on:
-      # Let the API apply EF migrations before the worker starts touching the schema.
       - webapi.presentation
     deploy:
       resources:
