@@ -8,8 +8,12 @@ bool isDevelopmentOrStaging = builder.Environment.IsDevelopment() || builder.Env
 
 builder.Services.AddWorkerApplication();
 builder.Services.AddWorkerInfrastructure(builder.Configuration, isDevelopmentOrStaging);
+builder.Services.AddDashboardAuthentication(builder.Configuration);
 
 WebApplication app = builder.Build();
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.UseWorkerDashboard();
 
