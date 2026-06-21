@@ -11,4 +11,8 @@ namespace WebApi.Application.Repositories.QueryRepos.UnsecuredRepos;
 public interface IUnsecuredQueryRepo : IQueryRepo
 {
     IQueryable<User> Users { get; }
+
+    IQueryable<Station> Stations { get; }
+
+    IQueryable<Service> Services { get; }
 }
